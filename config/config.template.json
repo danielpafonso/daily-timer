@@ -1,0 +1,11 @@
+{
+  "time": 20,
+  "warning": 10,
+  "participants": ["John", "Marcus", "Abigal"],
+  "randomOrder": true,
+  "stopwatch": true,
+  "stats": {
+    "display": true,
+    "lastDailies": 30
+  }
+}

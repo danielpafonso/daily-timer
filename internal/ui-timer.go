@@ -2,8 +2,17 @@ package internal
 
 import (
 	"errors"
+	"time"
 
 	"github.com/awesome-gocui/gocui"
+)
+
+var (
+	// Colors
+	colorStop    = gocui.ColorGreen
+	colorRun     = gocui.ColorWhite
+	colorWarning = gocui.ColorYellow
+	colorOver    = gocui.ColorRed
 )
 
 type TimerDigit struct {
@@ -21,9 +30,32 @@ type Timer struct {
 	dots     *gocui.View
 	// middle coord
 	midX, topY int
+	// color limits
+	warning int
+	limit   int
 	// Timer
-	value  int
-	toogle chan 
+	value    int
+	nextTick time.Time
+	running  bool
+}
+
+func (tm *Timer) setColor(color gocui.Attribute) {
+	tm.minute10.view.FgColor = color
+	tm.minute1.view.FgColor = color
+	tm.dots.FgColor = color
+	tm.second10.view.FgColor = color
+	tm.second1.view.FgColor = color
+}
+
+func (tm *Timer) displayTimer() {
+	minutes := tm.value / 60
+	seconds := tm.value % 60
+
+	tm.minute10.value = minutes / 10
+	tm.minute1.value = minutes % 10
+
+	tm.second10.value = seconds / 10
+	tm.second1.value = seconds % 10
 }
 
 func (tm *Timer) Increment(g *gocui.Gui, v *gocui.View) error {
@@ -34,6 +66,48 @@ func (tm *Timer) Increment(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+func (tm *Timer) Toogle(g *gocui.Gui, v *gocui.View) error {
+	if tm.running {
+		tm.running = false
+		tm.setColor(colorStop)
+	} else {
+		tm.nextTick = time.Now().Add(time.Second)
+		tm.running = true
+		if tm.value >= tm.warning {
+			if tm.value >= tm.limit {
+				tm.setColor(colorOver)
+			} else {
+				tm.setColor(colorWarning)
+			}
+		} else {
+			tm.setColor(colorRun)
+		}
+	}
+	return nil
+}
+
+func (tm *Timer) internalTicket(updateCh chan<- func(g *gocui.Gui) error) {
+	for {
+		if tm.running && time.Now().After(tm.nextTick) {
+			tm.nextTick = tm.nextTick.Add(time.Second)
+			tm.value += 1
+			// not the most efficiency
+			if tm.value >= tm.warning {
+				if tm.value >= tm.limit {
+					tm.setColor(colorOver)
+				} else {
+					tm.setColor(colorWarning)
+				}
+			}
+			tm.displayTimer()
+
+			// signal for gui update
+			updateCh <- tm.Layout
+		}
+		time.Sleep(250 * time.Millisecond)
+	}
+}
+
 func (tm *Timer) Layout(g *gocui.Gui) error {
 	// minute 10s
 	diff := 19
@@ -41,6 +115,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
+		view.FgColor = colorStop
 		view.WriteString(Digits[0])
 		view.Frame = false
 		tm.minute10.view = view
@@ -54,6 +129,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
+		view.FgColor = colorStop
 		view.WriteString(Digits[0])
 		view.Frame = false
 		tm.minute1.view = view
@@ -67,6 +143,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
+		view.FgColor = colorStop
 		view.WriteString(Dots)
 		view.Frame = false
 		tm.dots = view
@@ -77,6 +154,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
+		view.FgColor = colorStop
 		view.WriteString(Digits[0])
 		view.Frame = false
 		tm.second10.view = view
@@ -90,6 +168,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
+		view.FgColor = colorStop
 		view.WriteString(Digits[0])
 		view.Frame = false
 		tm.second1.view = view

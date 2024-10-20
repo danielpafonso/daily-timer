@@ -2,6 +2,8 @@ package internal
 
 import (
 	"errors"
+	"fmt"
+	"time"
 
 	"github.com/awesome-gocui/gocui"
 )
@@ -11,10 +13,15 @@ type App struct {
 	timer     Timer
 	users     TextUsers
 	helpPopup TextPopup
+	warning   int
+	limit     int
 }
 
 func NewAppUI(config Configurations) *App {
-	return &App{}
+	return &App{
+		warning: config.Warning,
+		limit:   config.Time,
+	}
 }
 
 func (app *App) Start() error {
@@ -24,14 +31,24 @@ func (app *App) Start() error {
 		return err
 	}
 	defer app.gui.Close()
+	// defer write stats
 
 	maxX, maxY := app.gui.Size()
 	// Create views
 	//  timer view(s)
 	app.timer = Timer{
-		midX: maxX/2 - 2,
-		topY: 0,
+		midX:    maxX/2 - 2,
+		topY:    0,
+		warning: app.warning,
+		limit:   app.limit,
+		// timer:   *time.NewTimer(time.Second),
+		// running: false,
+		nextTick: time.Now(),
+		running:  false,
 	}
+	// stop timer so that, the application starts "stoped"
+	// app.timer.timer.Stop()
+
 	//  user list
 	app.users = TextUsers{
 		name: "users",
@@ -48,7 +65,7 @@ func (app *App) Start() error {
 		x1:      maxX/2 + 20,
 		y1:      maxY/2 + 3,
 		visible: false,
-		text:    "Hello Stella",
+		text:    fmt.Sprintf("Hello Stella\nwarn: %d, limit: %d", app.warning, app.limit),
 	}
 
 	// Set Update Manager, order is required
@@ -86,14 +103,14 @@ func (app *App) Start() error {
 		return err
 	}
 
-	// // Start/stop timer
-	// if err := app.gui.SetKeybinding("", gocui.KeySpace, gocui.ModNone, app.timer.Toogle); err != nil {
-	// 	return err
-	// }
-	// if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.timer.Toogle); err != nil {
-	// 	return err
-	// }
-	//
+	// Start/stop timer
+	if err := app.gui.SetKeybinding("", gocui.KeySpace, gocui.ModNone, app.timer.Toogle); err != nil {
+		return err
+	}
+	if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.timer.Toogle); err != nil {
+		return err
+	}
+
 	// // User list controls:
 	// //  next
 	// if err := app.gui.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, app.users.NextUser); err != nil {
@@ -121,6 +138,20 @@ func (app *App) Start() error {
 	if err := app.gui.SetKeybinding("", 'i', gocui.ModNone, app.timer.Increment); err != nil {
 		return err
 	}
+
+	// channl to trigger gui update
+	updateChannel := make(chan func(g *gocui.Gui) error)
+
+	go func() {
+		// blocking channel read loop
+		for {
+			layoutFunc := <-updateChannel
+			app.gui.Update(layoutFunc)
+		}
+	}()
+
+	// start internal ticker
+	go app.timer.internalTicket(updateChannel)
 
 	// enter UI mainloop
 	if err := app.gui.MainLoop(); err != nil && !errors.Is(err, gocui.ErrQuit) {

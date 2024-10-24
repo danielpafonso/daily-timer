@@ -2,11 +2,14 @@ package internal
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 	"time"
 
 	"daily-timer/internal/sqlite"
+
+	"golang.org/x/tools/go/analysis/passes/appends"
 )
 
 type Stats struct {
@@ -16,7 +19,6 @@ type Stats struct {
 }
 
 func GetStats(dbConn *sql.DB, limitDailies int) (map[string]Stats, error) {
-
 	sqlStats, err := sqlite.CalculateStats(dbConn, limitDailies)
 	if err != nil {
 		return nil, err
@@ -35,16 +37,16 @@ func GetStats(dbConn *sql.DB, limitDailies int) (map[string]Stats, error) {
 }
 
 func InsertDaily(dbConn *sql.DB, stats map[string]Stats) error {
-	now := time.Now().Format(time.RFC3339)
-	queryArray := []string{}
+	now := time.Now()
+	insertData := make([]sqlite.Dailies, 0)
 	for k, v := range stats {
-		queryArray = append(queryArray, fmt.Sprintf("(\"%s\", \"%s\", %d)", k, now, v.Current))
+		insertData = append(insertData, sqlite.Dailies{
+			Name: k,
+			Date: now,
+			Time: v.Current,
+		})
 	}
-	// queryArray = append(queryArray, ";")
-
-	ctx := context.TODO()
-	_, err := dbConn.ExecContext(ctx, fmt.Sprintf("INSERT INTO dailies (name, time, value) VALUES %s;", strings.Join(queryArray, ",\n")))
-	fmt.Println(strings.Join(queryArray, ",\n"))
+	err := sqlite.InsertDaily(dbConn, insertData)
 	if err != nil {
 		return err
 	}

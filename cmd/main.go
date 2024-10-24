@@ -17,6 +17,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	// Other initializations
 
 	// Initialize ui
 	appUI := internal.NewAppUI(*configs)

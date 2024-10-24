@@ -21,15 +21,24 @@ func Open(team string) (*sql.DB, error) {
 }
 
 func CalculateStats(dbConn *sql.DB, limit int) ([]PastStats, error) {
-	query := fmt.Sprintf(`
+	// 	query := fmt.Sprintf(`
+	// SELECT
+	// 	distinct o.name,
+	// 	(select avg(value) from (select value from dailies as i where i.name=o.name order by time desc limit %d)),
+	// 	(select max(value) from (select value from dailies as i where i.name=o.name order by time desc limit %d))
+	// from dailies as o;`, limit, limit)
+	// 	ctx := context.TODO()
+	//
+	// 	rows, err := dbConn.QueryContext(ctx, query)
+	query := `
 SELECT
 	distinct o.name,
-	(select avg(value) from (select value from dailies as i where i.name=o.name order by time desc limit %d)),
-	(select max(value) from (select value from dailies as i where i.name=o.name order by time desc limit %d))
-from dailies as o;`, limit, limit)
+	(select avg(value) from (select value from dailies as i where i.name=o.name order by time desc limit $1)),
+	(select max(value) from (select value from dailies as i where i.name=o.name order by time desc limit $1))
+from dailies as o;`
 	ctx := context.TODO()
 
-	rows, err := dbConn.QueryContext(ctx, query)
+	rows, err := dbConn.QueryContext(ctx, query, limit)
 	if err != nil {
 		return nil, err
 	}

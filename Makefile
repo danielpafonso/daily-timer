@@ -4,7 +4,7 @@ all: clean build copy
 
 build:
 	@mkdir -p build
-	CGO_ENABLED=0 go build -trimpath -a -ldflags '-w -s' -o ./build/daily-timer ./cmd/
+	CGO_ENABLED=1 go build -trimpath -a -ldflags '-w -s' -o ./build/daily-timer ./cmd/
 
 copy:
 	@mkdir -p build

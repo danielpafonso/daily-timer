@@ -29,8 +29,8 @@ func AddNewPeople(stats map[string]Stats, people []string) {
 }
 
 // GetStats retrives calculated states from db
-func GetStats(dbConn *sql.DB, limitDailies int) (map[string]Stats, error) {
-	sqlStats, err := sqlite.CalculateStats(dbConn, limitDailies)
+func GetStats(dbConn *sql.DB, participants []string, limitDailies int) (map[string]Stats, error) {
+	sqlStats, err := sqlite.CalculateStats(dbConn, participants, limitDailies)
 	if err != nil {
 		return nil, err
 	}

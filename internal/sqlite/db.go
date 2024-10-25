@@ -9,26 +9,46 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+func checkTable(dbConn *sql.DB) error {
+	query := "SELECT name FROM sqlite_master WHERE type='table' AND name='dailies'"
+	ctx := context.TODO()
+
+	row := dbConn.QueryRowContext(ctx, query)
+	var table string
+	row.Scan(&table)
+	if table == "" {
+		// create table
+		query = "CREATE TABLE dailies (name TEXT NOT NULL, time TEXT NOT NULL, value INTEGER NOT NULL);"
+		ctx = context.TODO()
+		dbConn.ExecContext(ctx, query)
+	}
+	return nil
+}
+
+// Open creates connection to DB
 func Open(team string) (*sql.DB, error) {
-	dbPath := fmt.Sprintf("stat-%s.sql", team)
+	dbPath := fmt.Sprintf("stat-%s.sqlite", team)
 
 	dbConn, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return nil, err
 	}
+	checkTable(dbConn)
 	return dbConn, nil
 }
 
-func CalculateStats(dbConn *sql.DB, limit int) ([]PastStats, error) {
+// CalculateStats reads daily tables and returns average and max for participants
+func CalculateStats(dbConn *sql.DB, persons []string, limit int) ([]PastStats, error) {
 	query := `
 SELECT
-	distinct o.name,
-	(select cast(round(avg(value)) as INTEGER) from (select value from dailies as i where i.name=o.name order by time desc limit $1)),
-	(select max(value) from (select value from dailies as i where i.name=o.name order by time desc limit $1))
-from dailies as o;`
+	DISTINCT o.name,
+	(SELECT CAST(ROUND(AVG(value)) AS INTEGER) FROM (SELECT value FROM DAILIES AS i WHERE i.name=o.name ORDER BY time DESC LIMIT $1)),
+	(SELECT MAX(value) FROM (SELECT value FROM dailies AS i WHERE i.name=o.name ORDER BY time DESC LIMIT $1))
+FROM dailies AS o
+WHERE name IN ($2);`
 	ctx := context.TODO()
 
-	rows, err := dbConn.QueryContext(ctx, query, limit)
+	rows, err := dbConn.QueryContext(ctx, query, limit, strings.Join(persons, ", "))
 	if err != nil {
 		return nil, err
 	}
@@ -50,6 +70,7 @@ from dailies as o;`
 	return data, nil
 }
 
+// InsertDaily writes current daily session to DB
 func InsertDaily(dbConn *sql.DB, daily []Dailies) error {
 	queryArray := []string{}
 	for _, elm := range daily {

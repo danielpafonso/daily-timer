@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	stats, err := internal.GetStats(dbConn, configs.Status.LastDailies)
+	stats, err := internal.GetStats(dbConn, configs.Participants, configs.Status.LastDailies)
 	if err != nil {
 		log.Panic(err)
 	}

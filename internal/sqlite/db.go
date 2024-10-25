@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -21,19 +20,10 @@ func Open(team string) (*sql.DB, error) {
 }
 
 func CalculateStats(dbConn *sql.DB, limit int) ([]PastStats, error) {
-	// 	query := fmt.Sprintf(`
-	// SELECT
-	// 	distinct o.name,
-	// 	(select avg(value) from (select value from dailies as i where i.name=o.name order by time desc limit %d)),
-	// 	(select max(value) from (select value from dailies as i where i.name=o.name order by time desc limit %d))
-	// from dailies as o;`, limit, limit)
-	// 	ctx := context.TODO()
-	//
-	// 	rows, err := dbConn.QueryContext(ctx, query)
 	query := `
 SELECT
 	distinct o.name,
-	(select avg(value) from (select value from dailies as i where i.name=o.name order by time desc limit $1)),
+	(select cast(round(avg(value)) as INTEGER) from (select value from dailies as i where i.name=o.name order by time desc limit $1)),
 	(select max(value) from (select value from dailies as i where i.name=o.name order by time desc limit $1))
 from dailies as o;`
 	ctx := context.TODO()
@@ -61,10 +51,12 @@ from dailies as o;`
 }
 
 func InsertDaily(dbConn *sql.DB, daily []Dailies) error {
-	now := time.Now().Format(time.RFC3339)
 	queryArray := []string{}
 	for _, elm := range daily {
-		queryArray = append(queryArray, fmt.Sprintf("(\"%s\", \"%s\", %d)", elm.Name, now, elm.Time))
+		queryArray = append(
+			queryArray,
+			fmt.Sprintf("(\"%s\", \"%s\", %d)", elm.Name, elm.Date.UTC().Format("2006-01-02 15:04:05.999"), elm.Time),
+		)
 	}
 
 	ctx := context.TODO()

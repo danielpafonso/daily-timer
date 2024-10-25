@@ -1,15 +1,10 @@
 package internal
 
 import (
-	"context"
 	"database/sql"
-	"fmt"
-	"strings"
 	"time"
 
 	"daily-timer/internal/sqlite"
-
-	"golang.org/x/tools/go/analysis/passes/appends"
 )
 
 type Stats struct {

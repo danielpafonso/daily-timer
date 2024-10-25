@@ -20,20 +20,19 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	// Other initializations
+	// Initialize DB and get Stats
 	team := strings.TrimSuffix(filepath.Base(configPath), filepath.Ext(configPath))
 	dbConn, err := sqlite.Open(team)
 	if err != nil {
 		log.Panic(err)
 	}
-	stats, err := internal.GetStats(dbConn, 2)
+	stats, err := internal.GetStats(dbConn, configs.Status.LastDailies)
 	if err != nil {
 		log.Panic(err)
 	}
-	for k, v := range stats {
-		log.Println(k, v)
-	}
+	internal.AddNewPeople(stats, configs.Participants)
 
+	// Write current session to DB
 	defer internal.InsertDaily(dbConn, stats)
 
 	// Initialize ui

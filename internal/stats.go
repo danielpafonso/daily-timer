@@ -8,56 +8,58 @@ import (
 )
 
 type Stats struct {
+	Name    string
 	Current int
 	Average int
 	Max     int
 	Active  bool
 }
 
-// AddNewPeople check if there is new persons not in database and add them to stats
-func AddNewPeople(stats map[string]Stats, people []string) {
-	for _, person := range people {
-		if _, ok := stats[person]; !ok {
-			stats[person] = Stats{
-				Current: 0,
-				Average: 0,
-				Max:     0,
-				Active:  true,
-			}
-		}
-	}
-}
-
 // GetStats retrives calculated states from db
-func GetStats(dbConn *sql.DB, participants []string, limitDailies int) (map[string]Stats, error) {
+func GetStats(dbConn *sql.DB, participants []string, limitDailies int) ([]Stats, error) {
 	sqlStats, err := sqlite.CalculateStats(dbConn, participants, limitDailies)
 	if err != nil {
 		return nil, err
 	}
 
-	stats := make(map[string]Stats)
-	for _, stat := range sqlStats {
-		stats[stat.Name] = Stats{
+	// map persons on database
+	persons := make(map[string]int)
+	outputStats := make([]Stats, 0)
+	for _, x := range sqlStats {
+		persons[x.Name] = 0
+		outputStats = append(outputStats, Stats{
+			Name:    x.Name,
 			Current: 0,
-			Average: stat.Average,
-			Max:     stat.Max,
+			Average: x.Average,
+			Max:     x.Max,
 			Active:  true,
-		}
+		})
 	}
+	// check for new persons
+	for _, name := range participants {
+		if _, ok := persons[name]; !ok {
+			outputStats = append(outputStats, Stats{
+				Name:    name,
+				Average: 0,
+				Max:     0,
+				Active:  true,
+			})
+		}
 
-	return stats, nil
+	}
+	return outputStats, nil
 }
 
 // InsertDaily writes current daily session to db
-func InsertDaily(dbConn *sql.DB, stats map[string]Stats) error {
+func InsertDaily(dbConn *sql.DB, stats []Stats) error {
 	now := time.Now()
 	insertData := make([]sqlite.Dailies, 0)
-	for k, v := range stats {
-		if v.Active {
+	for _, stat := range stats {
+		if stat.Active {
 			insertData = append(insertData, sqlite.Dailies{
-				Name: k,
+				Name: stat.Name,
 				Date: now,
-				Time: v.Current,
+				Time: stat.Current,
 			})
 		}
 	}

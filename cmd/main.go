@@ -30,13 +30,12 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	internal.AddNewPeople(stats, configs.Participants)
 
-	// Write current session to DB
+	// defering writing current session to DB
 	defer internal.InsertDaily(dbConn, stats)
 
 	// Initialize ui
-	appUI := internal.NewAppUI(*configs)
+	appUI := internal.NewAppUI(*configs, &stats)
 	// Start ui
 	err = appUI.Start()
 	if err != nil {

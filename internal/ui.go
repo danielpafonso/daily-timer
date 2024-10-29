@@ -15,12 +15,14 @@ type App struct {
 	helpPopup TextPopup
 	warning   int
 	limit     int
+	stats     []Stats
 }
 
-func NewAppUI(config Configurations) *App {
+func NewAppUI(config Configurations, stats *[]Stats) *App {
 	return &App{
 		warning: config.Warning,
 		limit:   config.Time,
+		stats:   *stats,
 	}
 }
 
@@ -46,17 +48,20 @@ func (app *App) Start() error {
 		nextTick: time.Now(),
 		running:  false,
 	}
-	// stop timer so that, the application starts "stoped"
-	// app.timer.timer.Stop()
 
 	//  user list
 	app.users = TextUsers{
-		name: "users",
-		x0:   0,
-		y0:   8,
-		x1:   maxX - 1,
-		y1:   maxY - 2,
+		name:      "users",
+		x0:        0,
+		y0:        8,
+		x1:        maxX - 1,
+		y1:        maxY - 2,
+		current:   0,
+		showStats: true,
+		users:     app.stats,
 	}
+	app.users.calculatePadding()
+
 	//  help popup
 	app.helpPopup = TextPopup{
 		name:    "help",
@@ -85,8 +90,7 @@ func (app *App) Start() error {
 	}
 
 	// Set keybindings
-
-	// exit application
+	//  exit application
 	if err := app.gui.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 		return gocui.ErrQuit
 	}); err != nil {
@@ -98,7 +102,7 @@ func (app *App) Start() error {
 		return err
 	}
 
-	// toogle help popup
+	//  toogle help popup
 	if err := app.gui.SetKeybinding("", 'h', gocui.ModNone, app.helpPopup.ToogleVisible); err != nil {
 		return err
 	}
@@ -111,7 +115,7 @@ func (app *App) Start() error {
 		return err
 	}
 
-	// // User list controls:
+	//  User list controls:
 	// //  next
 	// if err := app.gui.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, app.users.NextUser); err != nil {
 	// 	return err

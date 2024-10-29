@@ -111,6 +111,12 @@ func (tu *TextUsers) ChangeUser(delta int, timer int) int {
 	return tu.users[tu.current].Current
 }
 
+func (tu *TextUsers) ToggleStats(g *gocui.Gui, v *gocui.View) error {
+	tu.showStats = !tu.showStats
+
+	return nil
+}
+
 // Layout creates/updates users widget
 func (tu *TextUsers) Layout(g *gocui.Gui) error {
 	if view, err := g.SetView(tu.name, tu.x0, tu.y0, tu.x1, tu.y1, 0); err != nil {
@@ -129,7 +135,13 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 		tu.view = view
 	} else {
 		// update view
+		lines := make([]string, len(tu.users))
+		for idx := range tu.users {
+			lines = append(lines, tu.generateLine(idx))
+		}
 
+		tu.view.Clear()
+		tu.view.WriteString(strings.Join(lines, "\n"))
 	}
 	return nil
 }

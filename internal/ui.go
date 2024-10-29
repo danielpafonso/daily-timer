@@ -26,6 +26,26 @@ func NewAppUI(config Configurations, stats *[]Stats) *App {
 	}
 }
 
+func (app *App) NextUser(g *gocui.Gui, v *gocui.View) error {
+	currentTimer := app.timer.value
+	newTimer := app.users.ChangeUser(1, currentTimer)
+	app.timer.value = newTimer
+	app.timer.ResetTimer()
+	app.gui.Update(app.timer.Layout)
+
+	return nil
+}
+
+func (app *App) PrevUser(g *gocui.Gui, v *gocui.View) error {
+	currentTimer := app.timer.value
+	newTimer := app.users.ChangeUser(-1, currentTimer)
+	app.timer.value = newTimer
+	app.timer.ResetTimer()
+	app.gui.Update(app.timer.Layout)
+
+	return nil
+}
+
 func (app *App) Start() error {
 	var err error
 	app.gui, err = gocui.NewGui(gocui.OutputNormal, true)
@@ -116,30 +136,27 @@ func (app *App) Start() error {
 	}
 
 	//  User list controls:
-	// //  next
-	// if err := app.gui.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, app.users.NextUser); err != nil {
-	// 	return err
-	// }
-	// if err := app.gui.SetKeybinding("", 'j', gocui.ModNone, app.users.NextUser); err != nil {
-	// 	return err
-	// }
-	// //  previous
-	// if err := app.gui.SetKeybinding("", gocui.KeyArrowUp, gocui.ModNone, app.users.PrevUser); err != nil {
-	// 	return err
-	// }
-	// if err := app.gui.SetKeybinding("", 'k', gocui.ModNone, app.users.PrevUser); err != nil {
-	// 	return err
-	// }
-	// //  show/hide user statistic
-	// if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.users.ToggleStats); err != nil {
-	// 	return err
-	// }
+	//  next
+	if err := app.gui.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, app.NextUser); err != nil {
+		return err
+	}
+	if err := app.gui.SetKeybinding("", 'j', gocui.ModNone, app.NextUser); err != nil {
+		return err
+	}
+	//  previous
+	if err := app.gui.SetKeybinding("", gocui.KeyArrowUp, gocui.ModNone, app.PrevUser); err != nil {
+		return err
+	}
+	if err := app.gui.SetKeybinding("", 'k', gocui.ModNone, app.PrevUser); err != nil {
+		return err
+	}
+	//  show/hide user statistic
+	if err := app.gui.SetKeybinding("", 's', gocui.ModNone, app.users.ToggleStats); err != nil {
+		return err
+	}
 
 	// debug/test
 	if err := app.gui.SetKeybinding("", 'c', gocui.ModNone, app.helpPopup.Color); err != nil {
-		return err
-	}
-	if err := app.gui.SetKeybinding("", 'i', gocui.ModNone, app.timer.Increment); err != nil {
 		return err
 	}
 

@@ -58,12 +58,26 @@ func (tm *Timer) displayTimer() {
 	tm.second1.value = seconds % 10
 }
 
-func (tm *Timer) Increment(g *gocui.Gui, v *gocui.View) error {
-	tm.minute1.value += 1
-	if tm.minute1.value == 10 {
-		tm.minute1.value = 0
+// ResetTimer writes current value to display, set display color equals to state and resets next ticker
+func (tm *Timer) ResetTimer() {
+	// set display numbers
+	tm.displayTimer()
+	// set colors
+	if tm.running {
+		if tm.value >= tm.warning {
+			if tm.value >= tm.limit {
+				tm.setColor(colorOver)
+			} else {
+				tm.setColor(colorWarning)
+			}
+		} else {
+			tm.setColor(colorRun)
+		}
+	} else {
+		tm.setColor(colorStop)
 	}
-	return nil
+	// reset next ticker
+	tm.nextTick = time.Now().Add(time.Second)
 }
 
 func (tm *Timer) Toogle(g *gocui.Gui, v *gocui.View) error {
@@ -98,6 +112,8 @@ func (tm *Timer) internalTicket(updateCh chan<- func(g *gocui.Gui) error) {
 				} else {
 					tm.setColor(colorWarning)
 				}
+			} else {
+				tm.setColor(colorRun)
 			}
 			tm.displayTimer()
 

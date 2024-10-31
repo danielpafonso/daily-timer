@@ -2,8 +2,6 @@ package internal
 
 import (
 	"errors"
-	"fmt"
-	"time"
 
 	"github.com/awesome-gocui/gocui"
 )
@@ -13,17 +11,29 @@ type App struct {
 	timer     Timer
 	users     TextUsers
 	helpPopup TextPopup
-	warning   int
-	limit     int
-	stats     []Stats
 }
 
 func NewAppUI(config Configurations, stats *[]Stats) *App {
-	return &App{
-		warning: config.Warning,
-		limit:   config.Time,
-		stats:   *stats,
+	newApp := App{
+		timer: Timer{
+			warning:   config.Warning,
+			limit:     config.Time,
+			running:   false,
+			stopwatch: config.Stopwatch,
+		},
+		users: TextUsers{
+			showStats: config.Status.Display,
+			users:     *stats,
+		},
 	}
+	// calculate user padding
+	newApp.users.calculatePadding()
+	// randomize order if desired
+	if config.Random {
+		newApp.users.RandomizeOrder()
+	}
+
+	return &newApp
 }
 
 func (app *App) NextUser(g *gocui.Gui, v *gocui.View) error {
@@ -56,41 +66,31 @@ func (app *App) Start() error {
 	// defer write stats
 
 	maxX, maxY := app.gui.Size()
+
 	// Create views
 	//  timer view(s)
-	app.timer = Timer{
-		midX:    maxX/2 - 2,
-		topY:    0,
-		warning: app.warning,
-		limit:   app.limit,
-		// timer:   *time.NewTimer(time.Second),
-		// running: false,
-		nextTick: time.Now(),
-		running:  false,
+	app.timer.midX = maxX/2 - 2
+	app.timer.topY = 0
+	// run display to update if in stopwatch
+	if !app.timer.stopwatch {
+		app.timer.displayTimer()
 	}
 
 	//  user list
-	app.users = TextUsers{
-		name:      "users",
-		x0:        0,
-		y0:        8,
-		x1:        maxX - 1,
-		y1:        maxY - 2,
-		current:   0,
-		showStats: true,
-		users:     app.stats,
-	}
-	app.users.calculatePadding()
+	app.users.x0 = 0
+	app.users.y0 = 8
+	app.users.x1 = maxX - 1
+	app.users.y1 = maxY - 2
 
 	//  help popup
 	app.helpPopup = TextPopup{
 		name:    "help",
 		x0:      maxX / 2,
 		y0:      maxY / 2,
-		x1:      maxX/2 + 20,
+		x1:      maxX/2 + 30,
 		y1:      maxY/2 + 3,
 		visible: false,
-		text:    fmt.Sprintf("Hello Stella\nwarn: %d, limit: %d", app.warning, app.limit),
+		text:    "This is a work in progress\nPlease don't be mean :)",
 	}
 
 	// Set Update Manager, order is required
@@ -117,6 +117,10 @@ func (app *App) Start() error {
 		return err
 	}
 	if err := app.gui.SetKeybinding("", 'q', gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		// update current user if timer is running
+		if app.timer.running {
+			app.users.users[app.users.current].Current = app.timer.value
+		}
 		return gocui.ErrQuit
 	}); err != nil {
 		return err
@@ -152,6 +156,13 @@ func (app *App) Start() error {
 	}
 	//  show/hide user statistic
 	if err := app.gui.SetKeybinding("", 's', gocui.ModNone, app.users.ToggleStats); err != nil {
+		return err
+	}
+	// randomize user list
+	if err := app.gui.SetKeybinding("", 'r', gocui.ModAlt, func(*gocui.Gui, *gocui.View) error {
+		app.users.RandomizeOrder()
+		return nil
+	}); err != nil {
 		return err
 	}
 

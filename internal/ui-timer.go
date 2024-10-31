@@ -34,9 +34,10 @@ type Timer struct {
 	warning int
 	limit   int
 	// Timer
-	value    int
-	nextTick time.Time
-	running  bool
+	value     int
+	nextTick  time.Time
+	running   bool
+	stopwatch bool
 }
 
 func (tm *Timer) setColor(color gocui.Attribute) {
@@ -48,8 +49,15 @@ func (tm *Timer) setColor(color gocui.Attribute) {
 }
 
 func (tm *Timer) displayTimer() {
-	minutes := tm.value / 60
-	seconds := tm.value % 60
+	value := tm.value
+	if !tm.stopwatch {
+		value = tm.limit - value
+		if value < 0 {
+			value = value * -1
+		}
+	}
+	minutes := value / 60
+	seconds := value % 60
 
 	tm.minute10.value = minutes / 10
 	tm.minute1.value = minutes % 10
@@ -132,7 +140,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[0])
+		view.WriteString(Digits[tm.minute10.value])
 		view.Frame = false
 		tm.minute10.view = view
 	} else {
@@ -146,7 +154,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[0])
+		view.WriteString(Digits[tm.minute1.value])
 		view.Frame = false
 		tm.minute1.view = view
 	} else {
@@ -171,7 +179,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[0])
+		view.WriteString(Digits[tm.second10.value])
 		view.Frame = false
 		tm.second10.view = view
 	} else {
@@ -185,7 +193,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[0])
+		view.WriteString(Digits[tm.second1.value])
 		view.Frame = false
 		tm.second1.view = view
 	} else {

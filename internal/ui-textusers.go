@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/awesome-gocui/gocui"
@@ -34,6 +35,10 @@ type TextUsers struct {
 //
 // 	return line
 // }
+
+func (tu *TextUsers) RandomizeOrder() {
+	rand.Shuffle(len(tu.users), func(i, j int) { tu.users[i], tu.users[j] = tu.users[j], tu.users[i] })
+}
 
 func (tu *TextUsers) generateLine(idx int) string {
 	// prefix
@@ -119,7 +124,7 @@ func (tu *TextUsers) ToggleStats(g *gocui.Gui, v *gocui.View) error {
 
 // Layout creates/updates users widget
 func (tu *TextUsers) Layout(g *gocui.Gui) error {
-	if view, err := g.SetView(tu.name, tu.x0, tu.y0, tu.x1, tu.y1, 0); err != nil {
+	if view, err := g.SetView("users", tu.x0, tu.y0, tu.x1, tu.y1, 0); err != nil {
 		// Create view
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
@@ -129,7 +134,7 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 		// view.WriteString("one\ntwo\nthree")
 		lines := make([]string, len(tu.users))
 		for idx := range tu.users {
-			lines = append(lines, tu.generateLine(idx))
+			lines[idx] = tu.generateLine(idx)
 		}
 		view.WriteString(strings.Join(lines, "\n"))
 		tu.view = view
@@ -137,7 +142,7 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 		// update view
 		lines := make([]string, len(tu.users))
 		for idx := range tu.users {
-			lines = append(lines, tu.generateLine(idx))
+			lines[idx] = tu.generateLine(idx)
 		}
 
 		tu.view.Clear()

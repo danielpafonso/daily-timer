@@ -39,16 +39,16 @@ func Open(team string) (*sql.DB, error) {
 
 // CalculateStats reads daily tables and returns average and max for participants
 func CalculateStats(dbConn *sql.DB, persons []string, limit int) ([]PastStats, error) {
-	query := `
+	query := fmt.Sprintf(`
 SELECT
 	DISTINCT o.name,
-	(SELECT CAST(ROUND(AVG(value)) AS INTEGER) FROM (SELECT value FROM DAILIES AS i WHERE i.name=o.name ORDER BY time DESC LIMIT $1)),
-	(SELECT MAX(value) FROM (SELECT value FROM dailies AS i WHERE i.name=o.name ORDER BY time DESC LIMIT $1))
+	(SELECT CAST(ROUND(AVG(value)) AS INTEGER) FROM (SELECT value FROM DAILIES AS i WHERE i.name=o.name ORDER BY time DESC LIMIT %d)),
+	(SELECT MAX(value) FROM (SELECT value FROM dailies AS i WHERE i.name=o.name ORDER BY time DESC LIMIT %d))
 FROM dailies AS o
-WHERE name IN ($2);`
+WHERE o.name IN ("%s");`, limit, limit, strings.Join(persons, "\", \""))
 	ctx := context.TODO()
 
-	rows, err := dbConn.QueryContext(ctx, query, limit, strings.Join(persons, ", "))
+	rows, err := dbConn.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

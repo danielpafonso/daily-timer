@@ -85,9 +85,9 @@ func (app *App) Start() error {
 	//  help popup
 	app.helpPopup = TextPopup{
 		name:    "help",
-		x0:      maxX / 2,
+		x0:      maxX/2 - 15,
 		y0:      maxY / 2,
-		x1:      maxX/2 + 30,
+		x1:      maxX/2 + 15,
 		y1:      maxY/2 + 3,
 		visible: false,
 		text:    "This is a work in progress\nPlease don't be mean :)",

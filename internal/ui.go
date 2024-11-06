@@ -165,6 +165,10 @@ func (app *App) Start() error {
 	}); err != nil {
 		return err
 	}
+	// toogle active/inactive users
+	if err := app.gui.SetKeybinding("", 'a', gocui.ModNone, app.users.ToogleActive); err != nil {
+		return err
+	}
 
 	// debug/test
 	if err := app.gui.SetKeybinding("", 'c', gocui.ModNone, app.helpPopup.Color); err != nil {

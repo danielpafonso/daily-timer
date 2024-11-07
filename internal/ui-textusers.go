@@ -47,7 +47,7 @@ func (tu *TextUsers) UserLine(idx int) string {
 		stats = fmt.Sprintf("max: %s, avg: %s", maxString, avgString)
 
 	}
-	return fmt.Sprintf("%s %s    %s [%v]", prefix, user, stats, tu.users[idx].Active)
+	return fmt.Sprintf("%s %s    %s", prefix, user, stats)
 }
 
 func (tu *TextUsers) calculatePadding() {

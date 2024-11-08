@@ -58,25 +58,35 @@ func (tu *TextUsers) calculatePadding() {
 	tu.padding = size
 }
 
-func (tu *TextUsers) ChangeUser(delta int, timer int) int {
-	old := tu.current
-	tu.current += delta
-	// no loop change
-	if tu.current < 0 {
-		tu.current = 0
+func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
+	// no lool change, short circuit
+	if tu.current+delta < 0 || tu.current+delta == len(tu.users) {
+		return tu.users[tu.current].Current
 	}
-	if tu.current == len(tu.users) {
-		tu.current = len(tu.users) - 1
-	}
+	// "infinite" loop to jump over inactive users
+	newUser := tu.current
+	for {
+		newUser += delta
+		// only on jump if timer isn't runnig, also skip inactive check
+		if !running {
+			break
+		}
+		// no loop change
+		if newUser < 0 {
+			return tu.users[tu.current].Current
+		}
+		if newUser == len(tu.users) {
+			return tu.users[tu.current].Current
+		}
+		if tu.users[newUser].Active {
+			break
+		}
 
+	}
 	// update old
-	tu.users[old].Current = timer
-	oldLine := tu.UserLine(old)
-	_ = oldLine
-
+	tu.users[tu.current].Current = timer
 	// update new
-	newLine := tu.UserLine(tu.current)
-	_ = newLine
+	tu.current = newUser
 
 	return tu.users[tu.current].Current
 }

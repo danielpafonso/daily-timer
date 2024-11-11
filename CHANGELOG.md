@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.1]
+
 ### Added
 
 - Timer or stopwatch with changing colours, warning when near and past desired limit
@@ -18,3 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Inactive participants have their timer display as `--:--`
 - Cursor will skip over inactive participants when timer is running
 - Timer will only start on active participants
+
+---
+
+[0.0.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.1

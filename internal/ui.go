@@ -56,6 +56,13 @@ func (app *App) PrevUser(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+func (app *App) ToogleOnActive(g *gocui.Gui, v *gocui.View) error {
+	if app.users.users[app.users.current].Active {
+		app.timer.Toogle()
+	}
+	return nil
+}
+
 func (app *App) Start() error {
 	var err error
 	app.gui, err = gocui.NewGui(gocui.OutputNormal, true)
@@ -132,10 +139,10 @@ func (app *App) Start() error {
 	}
 
 	// Start/stop timer
-	if err := app.gui.SetKeybinding("", gocui.KeySpace, gocui.ModNone, app.timer.Toogle); err != nil {
+	if err := app.gui.SetKeybinding("", gocui.KeySpace, gocui.ModNone, app.ToogleOnActive); err != nil {
 		return err
 	}
-	if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.timer.Toogle); err != nil {
+	if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.ToogleOnActive); err != nil {
 		return err
 	}
 

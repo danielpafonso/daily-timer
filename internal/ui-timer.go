@@ -88,7 +88,7 @@ func (tm *Timer) ResetTimer() {
 	tm.nextTick = time.Now().Add(time.Second)
 }
 
-func (tm *Timer) Toogle(g *gocui.Gui, v *gocui.View) error {
+func (tm *Timer) Toogle() {
 	if tm.running {
 		tm.running = false
 		tm.setColor(colorStop)
@@ -105,7 +105,6 @@ func (tm *Timer) Toogle(g *gocui.Gui, v *gocui.View) error {
 			tm.setColor(colorRun)
 		}
 	}
-	return nil
 }
 
 func (tm *Timer) internalTicket(updateCh chan<- func(g *gocui.Gui) error) {

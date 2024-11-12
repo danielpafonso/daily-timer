@@ -11,4 +11,4 @@ copy:
 	cp config/config.template.json build/config.json
 
 clean:
-	rm -rf build
+	find build -maxdepth 1 -type f -delete

@@ -19,7 +19,6 @@ func (tp *TextPopup) Layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
-		v.FrameColor = gocui.ColorRed
 		v.WriteString(tp.text)
 		v.Visible = tp.visible
 	} else {
@@ -30,15 +29,5 @@ func (tp *TextPopup) Layout(g *gocui.Gui) error {
 
 func (tp *TextPopup) ToogleVisible(g *gocui.Gui, v *gocui.View) error {
 	tp.visible = !tp.visible
-	return nil
-}
-
-func (tp *TextPopup) Color(g *gocui.Gui, v *gocui.View) error {
-	view, _ := g.View(tp.name)
-	if view.FgColor == gocui.ColorCyan {
-		view.FgColor = gocui.ColorYellow
-	} else {
-		view.FgColor = gocui.ColorCyan
-	}
 	return nil
 }

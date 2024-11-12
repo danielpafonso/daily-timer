@@ -2,6 +2,7 @@ package internal
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/awesome-gocui/gocui"
 )
@@ -63,7 +64,7 @@ func (app *App) ToogleOnActive(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func (app *App) Start() error {
+func (app *App) Start(version string) error {
 	var err error
 	app.gui, err = gocui.NewGui(gocui.OutputNormal, true)
 	if err != nil {
@@ -92,12 +93,24 @@ func (app *App) Start() error {
 	//  help popup
 	app.helpPopup = TextPopup{
 		name:    "help",
-		x0:      maxX/2 - 15,
-		y0:      maxY / 2,
-		x1:      maxX/2 + 15,
-		y1:      maxY/2 + 3,
+		x0:      maxX/2 - 17,
+		y0:      maxY/2 - 7,
+		x1:      maxX/2 + 17,
+		y1:      maxY/2 + 7,
 		visible: false,
-		text:    "This is a work in progress\nPlease don't be mean :)",
+		text: fmt.Sprintf(`          Key  Mapping
+
+ <h> Show/Hide this menu
+
+ <Space> Toggle timer on/off
+
+ <down>/<j> Next user
+ <up>/<k>   Previous user
+
+ <s> Show/Hide statistics
+ <a> Toggle user active/inactive
+
+         version: %s`, version),
 	}
 
 	// Set Update Manager, order is required
@@ -174,11 +187,6 @@ func (app *App) Start() error {
 	}
 	// toogle active/inactive users
 	if err := app.gui.SetKeybinding("", 'a', gocui.ModNone, app.users.ToogleActive); err != nil {
-		return err
-	}
-
-	// debug/test
-	if err := app.gui.SetKeybinding("", 'c', gocui.ModNone, app.helpPopup.Color); err != nil {
 		return err
 	}
 

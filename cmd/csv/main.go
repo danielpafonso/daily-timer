@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 	"log"
-	// "path/filepath"
-	// "strings"
+	"path/filepath"
+	"strings"
 
 	"daily-timer/internal"
 )
@@ -20,21 +20,14 @@ func main() {
 		log.Panic(err)
 	}
 	// Initialize DB and get Stats
-	// team := strings.TrimSuffix(filepath.Base(configPath), filepath.Ext(configPath))
-	stats := make([]internal.Stats, 0)
-	stats = append(stats, internal.Stats{Name: "hello", Active: true})
-	stats = append(stats, internal.Stats{Name: "stella"})
-	// dbConn, err := sqlite.Open(team)
-	// if err != nil {
-	// 	log.Panic(err)
-	// }
-	// stats, err := GetStats(dbConn, configs.Participants, configs.Status.LastDailies)
-	// if err != nil {
-	// 	log.Panic(err)
-	// }
-	//
-	// // defering writing current session to DB
-	// defer InsertDaily(dbConn, stats)
+	team := strings.TrimSuffix(filepath.Base(configPath), filepath.Ext(configPath))
+	stats, err := ReadStats(team, configs.Participants, configs.Status.LastDailies)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// defering writing current session to DB
+	defer WriteDaily(team, stats)
 
 	// Initialize ui
 	appUI := internal.NewAppUI(*configs, &stats)

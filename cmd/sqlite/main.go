@@ -26,13 +26,13 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
-	stats, err := internal.GetStats(dbConn, configs.Participants, configs.Status.LastDailies)
+	stats, err := GetStats(dbConn, configs.Participants, configs.Status.LastDailies)
 	if err != nil {
 		log.Panic(err)
 	}
 
 	// defering writing current session to DB
-	defer internal.InsertDaily(dbConn, stats)
+	defer InsertDaily(dbConn, stats)
 
 	// Initialize ui
 	appUI := internal.NewAppUI(*configs, &stats)

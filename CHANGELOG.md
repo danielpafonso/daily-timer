@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2]
+
 ### Added
 
 - Add command line flag, `-v`, to show binary version
 - Change Help menu text, listing keys
+
+### Change
+
+- Split binaries into using Sqlite and other using csv, speeding dev/testing
 
 ## [0.0.1]
 
@@ -28,5 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v0.0.1...HEAD
+[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.2
 [0.0.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.1

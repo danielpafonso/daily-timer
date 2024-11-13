@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"path/filepath"
 	"strings"
@@ -9,11 +10,22 @@ import (
 	"daily-timer/internal"
 )
 
+const (
+	Version string = "0.0.2"
+)
+
 func main() {
 	var configPath string
+	var showVersion bool
 
 	flag.StringVar(&configPath, "c", "config.json", "Path to configuration file")
+	flag.BoolVar(&showVersion, "v", false, "Show version")
 	flag.Parse()
+
+	if showVersion {
+		fmt.Printf("daily-timer %s\n", Version)
+		return
+	}
 
 	configs, err := internal.LoadConfigurations(configPath)
 	if err != nil {
@@ -32,7 +44,7 @@ func main() {
 	// Initialize ui
 	appUI := internal.NewAppUI(*configs, &stats)
 	// Start ui
-	err = appUI.Start()
+	err = appUI.Start(Version)
 	if err != nil {
 		log.Panic(err)
 	}

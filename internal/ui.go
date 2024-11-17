@@ -40,20 +40,22 @@ func NewAppUI(config Configurations, stats *[]Stats) *App {
 func (app *App) NextUser(g *gocui.Gui, v *gocui.View) error {
 	currentTimer := app.timer.value
 	newTimer := app.users.ChangeUser(1, currentTimer, app.timer.running)
-	app.timer.value = newTimer
-	app.timer.ResetTimer()
-	app.gui.Update(app.timer.Layout)
-
+	if newTimer >= 0 {
+		app.timer.value = newTimer
+		app.timer.ResetTimer()
+		app.gui.Update(app.timer.Layout)
+	}
 	return nil
 }
 
 func (app *App) PrevUser(g *gocui.Gui, v *gocui.View) error {
 	currentTimer := app.timer.value
 	newTimer := app.users.ChangeUser(-1, currentTimer, app.timer.running)
-	app.timer.value = newTimer
-	app.timer.ResetTimer()
-	app.gui.Update(app.timer.Layout)
-
+	if newTimer >= 0 {
+		app.timer.value = newTimer
+		app.timer.ResetTimer()
+		app.gui.Update(app.timer.Layout)
+	}
 	return nil
 }
 

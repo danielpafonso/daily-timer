@@ -70,6 +70,9 @@ func ReadStats(team string, participants []string, limitDailies int) ([]internal
 	// calculate max and average
 	for name, past := range pastMap {
 		limit := min(past.count, limitDailies)
+		if limit == 0 {
+			continue
+		}
 		sum := 0
 		maxValue := 0
 		for i := 0; i < limit; i++ {

@@ -61,7 +61,7 @@ func (tu *TextUsers) calculatePadding() {
 func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
 	// no lool change, short circuit
 	if tu.current+delta < 0 || tu.current+delta == len(tu.users) {
-		return tu.users[tu.current].Current
+		return -1
 	}
 	// "infinite" loop to jump over inactive users
 	newUser := tu.current

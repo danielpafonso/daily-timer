@@ -17,6 +17,7 @@ type Configurations struct {
 	} `json:"stats"`
 }
 
+// LoadConfigurations reads and loads team configuration file
 func LoadConfigurations(filepath string) (*Configurations, error) {
 	var config Configurations
 	// read file

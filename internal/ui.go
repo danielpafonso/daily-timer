@@ -14,6 +14,7 @@ type App struct {
 	helpPopup TextPopup
 }
 
+// NewAppUI initiates new UI
 func NewAppUI(config Configurations, stats *[]Stats) *App {
 	newApp := App{
 		timer: Timer{
@@ -37,6 +38,7 @@ func NewAppUI(config Configurations, stats *[]Stats) *App {
 	return &newApp
 }
 
+// NextUser selects next user
 func (app *App) NextUser(g *gocui.Gui, v *gocui.View) error {
 	currentTimer := app.timer.value
 	newTimer := app.users.ChangeUser(1, currentTimer, app.timer.running)
@@ -48,6 +50,7 @@ func (app *App) NextUser(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+// PrevUser selects previous user
 func (app *App) PrevUser(g *gocui.Gui, v *gocui.View) error {
 	currentTimer := app.timer.value
 	newTimer := app.users.ChangeUser(-1, currentTimer, app.timer.running)
@@ -59,13 +62,15 @@ func (app *App) PrevUser(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func (app *App) ToogleOnActive(g *gocui.Gui, v *gocui.View) error {
+// ToggleOnActive toggle timer only on active users
+func (app *App) ToggleOnActive(g *gocui.Gui, v *gocui.View) error {
 	if app.users.users[app.users.current].Active {
-		app.timer.Toogle()
+		app.timer.Toggle()
 	}
 	return nil
 }
 
+// Start starts the application
 func (app *App) Start(version string) error {
 	var err error
 	app.gui, err = gocui.NewGui(gocui.OutputNormal, true)
@@ -148,16 +153,16 @@ func (app *App) Start(version string) error {
 		return err
 	}
 
-	//  toogle help popup
-	if err := app.gui.SetKeybinding("", 'h', gocui.ModNone, app.helpPopup.ToogleVisible); err != nil {
+	//  toggle help popup
+	if err := app.gui.SetKeybinding("", 'h', gocui.ModNone, app.helpPopup.ToggleVisible); err != nil {
 		return err
 	}
 
 	// Start/stop timer
-	if err := app.gui.SetKeybinding("", gocui.KeySpace, gocui.ModNone, app.ToogleOnActive); err != nil {
+	if err := app.gui.SetKeybinding("", gocui.KeySpace, gocui.ModNone, app.ToggleOnActive); err != nil {
 		return err
 	}
-	if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.ToogleOnActive); err != nil {
+	if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.ToggleOnActive); err != nil {
 		return err
 	}
 
@@ -180,15 +185,19 @@ func (app *App) Start(version string) error {
 	if err := app.gui.SetKeybinding("", 's', gocui.ModNone, app.users.ToggleStats); err != nil {
 		return err
 	}
-	// randomize user list
+	//  randomize user list
 	if err := app.gui.SetKeybinding("", 'r', gocui.ModAlt, func(*gocui.Gui, *gocui.View) error {
 		app.users.RandomizeOrder()
 		return nil
 	}); err != nil {
 		return err
 	}
-	// toogle active/inactive users
-	if err := app.gui.SetKeybinding("", 'a', gocui.ModNone, app.users.ToogleActive); err != nil {
+	//  toggle active/inactive users
+	if err := app.gui.SetKeybinding("", 'a', gocui.ModNone, app.users.ToggleActive); err != nil {
+		return err
+	}
+	//  opens window to insert a temp user
+	if err := app.gui.SetKeybinding("", 'i', gocui.ModNone, app.users.AddTempUser); err != nil {
 		return err
 	}
 

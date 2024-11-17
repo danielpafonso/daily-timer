@@ -14,6 +14,7 @@ type TextPopup struct {
 	text    string
 }
 
+// Layout creates/updates help popup widget
 func (tp *TextPopup) Layout(g *gocui.Gui) error {
 	if v, err := g.SetView(tp.name, tp.x0, tp.y0, tp.x1, tp.y1, 0); err != nil {
 		if !errors.Is(err, gocui.ErrUnknownView) {
@@ -27,7 +28,8 @@ func (tp *TextPopup) Layout(g *gocui.Gui) error {
 	return nil
 }
 
-func (tp *TextPopup) ToogleVisible(g *gocui.Gui, v *gocui.View) error {
+// ToggleVisible shows/hides the help widget
+func (tp *TextPopup) ToggleVisible(g *gocui.Gui, v *gocui.View) error {
 	tp.visible = !tp.visible
 	return nil
 }

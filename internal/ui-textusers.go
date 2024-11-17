@@ -20,10 +20,12 @@ type TextUsers struct {
 	x1, y1    int
 }
 
+// RandomizeOrder randomizes the user list
 func (tu *TextUsers) RandomizeOrder() {
 	rand.Shuffle(len(tu.users), func(i, j int) { tu.users[i], tu.users[j] = tu.users[j], tu.users[i] })
 }
 
+// UserLine generates string line to display with user information
 func (tu *TextUsers) UserLine(idx int) string {
 	if idx < 0 || idx >= len(tu.users) {
 		return ""
@@ -58,6 +60,7 @@ func (tu *TextUsers) calculatePadding() {
 	tu.padding = size
 }
 
+// ChangeUser moves selection to previous or nex user on the list
 func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
 	// no lool change, short circuit
 	if tu.current+delta < 0 || tu.current+delta == len(tu.users) {
@@ -91,13 +94,20 @@ func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
 	return tu.users[tu.current].Current
 }
 
+// AddTempUser TODO
+func (tu *TextUsers) AddTempUser(g *gocui.Gui, v *gocui.View) error {
+	return nil
+}
+
+// ToggleStats hides/shows user statistics
 func (tu *TextUsers) ToggleStats(g *gocui.Gui, v *gocui.View) error {
 	tu.showStats = !tu.showStats
 
 	return nil
 }
 
-func (tu *TextUsers) ToogleActive(g *gocui.Gui, v *gocui.View) error {
+// ToggleActive sets current user active or inactive
+func (tu *TextUsers) ToggleActive(g *gocui.Gui, v *gocui.View) error {
 	tu.users[tu.current].Active = !tu.users[tu.current].Active
 
 	return nil

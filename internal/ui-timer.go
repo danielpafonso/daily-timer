@@ -88,7 +88,8 @@ func (tm *Timer) ResetTimer() {
 	tm.nextTick = time.Now().Add(time.Second)
 }
 
-func (tm *Timer) Toogle() {
+// Toggle starts/stops the timer
+func (tm *Timer) Toggle() {
 	if tm.running {
 		tm.running = false
 		tm.setColor(colorStop)
@@ -131,6 +132,7 @@ func (tm *Timer) internalTicket(updateCh chan<- func(g *gocui.Gui) error) {
 	}
 }
 
+// Layout creates/updates timer widget
 func (tm *Timer) Layout(g *gocui.Gui) error {
 	// minute 10s
 	diff := 19

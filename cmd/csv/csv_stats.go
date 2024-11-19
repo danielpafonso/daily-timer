@@ -20,6 +20,7 @@ type pastData struct {
 func ReadStats(team string, participants []string, limitDailies int) ([]internal.Stats, error) {
 	statFile := fmt.Sprintf("stat-%s.csv", team)
 
+	// short-circuit when limitDailies is zero, or stat file does not exist
 	if _, ok := os.Stat(statFile); ok != nil || limitDailies == 0 {
 		outputStats := make([]internal.Stats, 0)
 		for _, name := range participants {
@@ -58,8 +59,11 @@ func ReadStats(team string, participants []string, limitDailies int) ([]internal
 		// date,name,value
 		data := strings.Split(line, ",")
 		value, _ := strconv.Atoi(data[2])
-		past := pastMap[data[1]]
-
+		past, ok := pastMap[data[1]]
+		if !ok {
+			//person in stats but not in config
+			continue
+		}
 		past.data[past.idx] = value
 		past.count += 1
 		past.idx += 1

@@ -25,7 +25,7 @@ func NewAppUI(config Configurations, stats *[]Stats) *App {
 		},
 		users: TextUsers{
 			showStats: config.Status.Display,
-			users:     *stats,
+			users:     stats,
 		},
 	}
 	// calculate user padding
@@ -64,7 +64,7 @@ func (app *App) PrevUser(g *gocui.Gui, v *gocui.View) error {
 
 // ToggleOnActive toggle timer only on active users
 func (app *App) ToggleOnActive(g *gocui.Gui, v *gocui.View) error {
-	if app.users.users[app.users.current].Active {
+	if (*app.users.users)[app.users.current].Active {
 		app.timer.Toggle()
 	}
 	return nil
@@ -146,7 +146,7 @@ func (app *App) Start(version string) error {
 	if err := app.gui.SetKeybinding("", 'q', gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 		// update current user if timer is running
 		if app.timer.running {
-			app.users.users[app.users.current].Current = app.timer.value
+			(*app.users.users)[app.users.current].Current = app.timer.value
 		}
 		return gocui.ErrQuit
 	}); err != nil {

@@ -12,7 +12,7 @@ import (
 type TextUsers struct {
 	name      string
 	view      *gocui.View
-	users     []Stats
+	users     *[]Stats
 	padding   int
 	current   int
 	showStats bool
@@ -22,12 +22,12 @@ type TextUsers struct {
 
 // RandomizeOrder randomizes the user list
 func (tu *TextUsers) RandomizeOrder() {
-	rand.Shuffle(len(tu.users), func(i, j int) { tu.users[i], tu.users[j] = tu.users[j], tu.users[i] })
+	rand.Shuffle(len(*tu.users), func(i, j int) { (*tu.users)[i], (*tu.users)[j] = (*tu.users)[j], (*tu.users)[i] })
 }
 
 // UserLine generates string line to display with user information
 func (tu *TextUsers) UserLine(idx int) string {
-	if idx < 0 || idx >= len(tu.users) {
+	if idx < 0 || idx >= len(*tu.users) {
 		return ""
 	}
 	// Cursor/active timer
@@ -37,15 +37,15 @@ func (tu *TextUsers) UserLine(idx int) string {
 	}
 	// User name
 	current := "--:--"
-	if tu.users[idx].Active {
-		current = fmt.Sprintf("%02d:%02d", tu.users[idx].Current/60, tu.users[idx].Current%60)
+	if (*tu.users)[idx].Active {
+		current = fmt.Sprintf("%02d:%02d", (*tu.users)[idx].Current/60, (*tu.users)[idx].Current%60)
 	}
-	user := fmt.Sprintf("%-*s  %s", tu.padding, tu.users[idx].Name, current)
+	user := fmt.Sprintf("%-*s  %s", tu.padding, (*tu.users)[idx].Name, current)
 	// stats
 	stats := ""
 	if tu.showStats {
-		maxString := fmt.Sprintf("%02d:%02d", tu.users[idx].Max/60, tu.users[idx].Max%60)
-		avgString := fmt.Sprintf("%02d:%02d", tu.users[idx].Average/60, tu.users[idx].Average%60)
+		maxString := fmt.Sprintf("%02d:%02d", (*tu.users)[idx].Max/60, (*tu.users)[idx].Max%60)
+		avgString := fmt.Sprintf("%02d:%02d", (*tu.users)[idx].Average/60, (*tu.users)[idx].Average%60)
 		stats = fmt.Sprintf("max: %s, avg: %s", maxString, avgString)
 
 	}
@@ -54,7 +54,7 @@ func (tu *TextUsers) UserLine(idx int) string {
 
 func (tu *TextUsers) calculatePadding() {
 	size := 0
-	for _, person := range tu.users {
+	for _, person := range *tu.users {
 		size = max(size, len(person.Name))
 	}
 	tu.padding = size
@@ -63,7 +63,7 @@ func (tu *TextUsers) calculatePadding() {
 // ChangeUser moves selection to previous or nex user on the list
 func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
 	// no lool change, short circuit
-	if tu.current+delta < 0 || tu.current+delta == len(tu.users) {
+	if tu.current+delta < 0 || tu.current+delta == len(*tu.users) {
 		return -1
 	}
 	// "infinite" loop to jump over inactive users
@@ -76,26 +76,40 @@ func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
 		}
 		// no loop change
 		if newUser < 0 {
-			return tu.users[tu.current].Current
+			return (*tu.users)[tu.current].Current
 		}
-		if newUser == len(tu.users) {
-			return tu.users[tu.current].Current
+		if newUser == len(*tu.users) {
+			return (*tu.users)[tu.current].Current
 		}
-		if tu.users[newUser].Active {
+		if (*tu.users)[newUser].Active {
 			break
 		}
 
 	}
 	// update old
-	tu.users[tu.current].Current = timer
+	(*tu.users)[tu.current].Current = timer
 	// update new
 	tu.current = newUser
 
-	return tu.users[tu.current].Current
+	return (*tu.users)[tu.current].Current
 }
 
 // AddTempUser TODO
 func (tu *TextUsers) AddTempUser(g *gocui.Gui, v *gocui.View) error {
+	// open input widget
+
+	// debug
+	userName := "temp"
+	for _, user := range *tu.users {
+		if user.Name == userName {
+			return nil
+		}
+	}
+	*tu.users = append(*tu.users, Stats{
+		Name:   userName,
+		Active: true,
+		Temp:   true,
+	})
 	return nil
 }
 
@@ -108,7 +122,7 @@ func (tu *TextUsers) ToggleStats(g *gocui.Gui, v *gocui.View) error {
 
 // ToggleActive sets current user active or inactive
 func (tu *TextUsers) ToggleActive(g *gocui.Gui, v *gocui.View) error {
-	tu.users[tu.current].Active = !tu.users[tu.current].Active
+	(*tu.users)[tu.current].Active = !(*tu.users)[tu.current].Active
 
 	return nil
 }
@@ -123,16 +137,16 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 		view.Frame = false
 		view.Wrap = false
 		// view.WriteString("one\ntwo\nthree")
-		lines := make([]string, len(tu.users))
-		for idx := range tu.users {
+		lines := make([]string, len(*tu.users))
+		for idx := range *tu.users {
 			lines[idx] = tu.UserLine(idx)
 		}
 		view.WriteString(strings.Join(lines, "\n"))
 		tu.view = view
 	} else {
 		// update view
-		lines := make([]string, len(tu.users))
-		for idx := range tu.users {
+		lines := make([]string, len(*tu.users))
+		for idx := range *tu.users {
 			lines[idx] = tu.UserLine(idx)
 		}
 

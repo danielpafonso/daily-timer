@@ -6,4 +6,5 @@ type Stats struct {
 	Average int
 	Max     int
 	Active  bool
+	Temp    bool
 }

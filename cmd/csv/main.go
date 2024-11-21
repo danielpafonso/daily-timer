@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// defering writing current session to DB
-	defer WriteDaily(team, stats)
+	defer WriteDaily(team, &stats)
 
 	// Initialize ui
 	appUI := internal.NewAppUI(*configs, &stats)

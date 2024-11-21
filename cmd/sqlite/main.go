@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// defering writing current session to DB
-	defer InsertDaily(dbConn, stats)
+	defer InsertDaily(dbConn, &stats, configs.AddTemp)
 
 	// Initialize ui
 	appUI := internal.NewAppUI(*configs, &stats)

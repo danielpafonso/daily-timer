@@ -11,6 +11,7 @@ type Configurations struct {
 	Participants []string `json:"participants"`
 	Random       bool     `json:"randomOrder"`
 	Stopwatch    bool     `json:"stopwatch"`
+	AddTemp      bool     `json:"addTemp"`
 	Status       struct {
 		Display     bool `json:"display"`
 		LastDailies int  `json:"lastDailies"`

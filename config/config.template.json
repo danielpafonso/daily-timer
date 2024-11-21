@@ -4,6 +4,7 @@
   "participants": ["John", "Marcus", "Abigal"],
   "randomOrder": true,
   "stopwatch": true,
+  "addTemp": false,
   "stats": {
     "display": true,
     "lastDailies": 30

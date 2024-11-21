@@ -39,7 +39,7 @@ func main() {
 	}
 
 	// defering writing current session to DB
-	defer WriteDaily(team, &stats)
+	defer WriteDaily(team, &stats, configs.AddTemp)
 
 	// Initialize ui
 	appUI := internal.NewAppUI(*configs, &stats)
@@ -48,4 +48,5 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+	fmt.Println(stats)
 }

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Add
+
+- Add keybing/function to add Temp participant to current list
+- Field `AddTemp` to configuration that controls if a temp participant is written to stats files
+
 ### Fix
 
 - Crash when participant is in csv file and not on configuration list

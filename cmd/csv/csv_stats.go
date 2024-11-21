@@ -96,7 +96,7 @@ func ReadStats(team string, participants []string, limitDailies int) ([]internal
 }
 
 // WriteDaily writes current daily session to file
-func WriteDaily(team string, stats *[]internal.Stats) error {
+func WriteDaily(team string, stats *[]internal.Stats, writeTemp bool) error {
 	var file *os.File
 	var err error
 	statFile := fmt.Sprintf("stat-%s.csv", team)
@@ -115,8 +115,16 @@ func WriteDaily(team string, stats *[]internal.Stats) error {
 
 	now := time.Now().UTC()
 	for _, stat := range *stats {
-		fmt.Println(stat)
-		if stat.Active {
+		if stat.Temp {
+			if writeTemp {
+				file.WriteString(fmt.Sprintf(
+					"%s,%s,%d\n",
+					now.Format("2006-01-02 15:04:05.999"),
+					stat.Name,
+					stat.Current,
+				))
+			}
+		} else if stat.Active {
 			file.WriteString(fmt.Sprintf(
 				"%s,%s,%d\n",
 				now.Format("2006-01-02 15:04:05.999"),

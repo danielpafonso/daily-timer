@@ -44,11 +44,19 @@ func GetStats(dbConn *sql.DB, participants []string, limitDailies int) ([]intern
 }
 
 // InsertDaily writes current daily session to db
-func InsertDaily(dbConn *sql.DB, stats []internal.Stats) error {
+func InsertDaily(dbConn *sql.DB, stats *[]internal.Stats, writeTemp bool) error {
 	now := time.Now()
 	insertData := make([]sqlite.Dailies, 0)
-	for _, stat := range stats {
-		if stat.Active {
+	for _, stat := range *stats {
+		if stat.Temp {
+			if writeTemp {
+				insertData = append(insertData, sqlite.Dailies{
+					Name: stat.Name,
+					Date: now,
+					Time: stat.Current,
+				})
+			}
+		} else if stat.Active {
 			insertData = append(insertData, sqlite.Dailies{
 				Name: stat.Name,
 				Date: now,

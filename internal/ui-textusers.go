@@ -10,7 +10,7 @@ import (
 )
 
 type TextUsers struct {
-	name      string
+	Name      string
 	view      *gocui.View
 	users     *[]Stats
 	padding   int
@@ -94,23 +94,20 @@ func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
 	return (*tu.users)[tu.current].Current
 }
 
-// AddTempUser TODO
-func (tu *TextUsers) AddTempUser(g *gocui.Gui, v *gocui.View) error {
-	// open input widget
-
-	// debug
-	userName := "temp"
+// AddTempUser adds a temporary user to user list
+func (tu *TextUsers) AddTempUser(userName string) {
+	// check if user is currently in list
 	for _, user := range *tu.users {
 		if user.Name == userName {
-			return nil
+			return
 		}
 	}
+	// adds new user
 	*tu.users = append(*tu.users, Stats{
 		Name:   userName,
 		Active: true,
 		Temp:   true,
 	})
-	return nil
 }
 
 // ToggleStats hides/shows user statistics
@@ -129,7 +126,7 @@ func (tu *TextUsers) ToggleActive(g *gocui.Gui, v *gocui.View) error {
 
 // Layout creates/updates users widget
 func (tu *TextUsers) Layout(g *gocui.Gui) error {
-	if view, err := g.SetView("users", tu.x0, tu.y0, tu.x1, tu.y1, 0); err != nil {
+	if view, err := g.SetView(tu.Name, tu.x0, tu.y0, tu.x1, tu.y1, 0); err != nil {
 		// Create view
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
@@ -142,6 +139,8 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 			lines[idx] = tu.UserLine(idx)
 		}
 		view.WriteString(strings.Join(lines, "\n"))
+		g.SetViewOnBottom(tu.Name)
+		g.SetCurrentView(tu.Name)
 		tu.view = view
 	} else {
 		// update view

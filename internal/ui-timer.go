@@ -143,6 +143,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		view.FgColor = colorStop
 		view.WriteString(Digits[tm.minute10.value])
 		view.Frame = false
+		g.SetViewOnBottom("minute-10")
 		tm.minute10.view = view
 	} else {
 		tm.minute10.view.Clear()
@@ -157,6 +158,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		view.FgColor = colorStop
 		view.WriteString(Digits[tm.minute1.value])
 		view.Frame = false
+		g.SetViewOnBottom("minute-1")
 		tm.minute1.view = view
 	} else {
 		tm.minute1.view.Clear()
@@ -171,6 +173,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		view.FgColor = colorStop
 		view.WriteString(Dots)
 		view.Frame = false
+		g.SetViewOnBottom("dots")
 		tm.dots = view
 	}
 	// second 10s
@@ -183,6 +186,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		view.WriteString(Digits[tm.second10.value])
 		view.Frame = false
 		tm.second10.view = view
+		g.SetViewOnBottom("second-10")
 	} else {
 		tm.second10.view.Clear()
 		tm.second10.view.WriteString(Digits[tm.second10.value])
@@ -197,6 +201,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		view.WriteString(Digits[tm.second1.value])
 		view.Frame = false
 		tm.second1.view = view
+		g.SetViewOnBottom("second-1")
 	} else {
 		tm.second1.view.Clear()
 		tm.second1.view.WriteString(Digits[tm.second1.value])

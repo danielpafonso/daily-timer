@@ -12,6 +12,7 @@ type App struct {
 	timer     Timer
 	users     TextUsers
 	helpPopup TextPopup
+	inputTemp TextInput
 }
 
 // NewAppUI initiates new UI
@@ -24,6 +25,7 @@ func NewAppUI(config Configurations, stats *[]Stats) *App {
 			stopwatch: config.Stopwatch,
 		},
 		users: TextUsers{
+			Name:      "users",
 			showStats: config.Status.Display,
 			users:     stats,
 		},
@@ -67,6 +69,41 @@ func (app *App) ToggleOnActive(g *gocui.Gui, v *gocui.View) error {
 	if (*app.users.users)[app.users.current].Active {
 		app.timer.Toggle()
 	}
+	return nil
+}
+
+// OpenTempUser opens text input and sets it as active/current view
+func (app *App) OpenTempUser(g *gocui.Gui, v *gocui.View) error {
+	app.inputTemp.Visible = true
+	g.SetViewOnTop(app.inputTemp.Name)
+	g.SetCurrentView(app.inputTemp.Name)
+	return nil
+}
+
+// AddTempUser closes text input and adds a temp user if input isn't empty
+func (app *App) AddTempUser(g *gocui.Gui, v *gocui.View) error {
+	newUser := app.inputTemp.Close()
+	g.SetCurrentView(app.users.Name)
+	if newUser != "" {
+		app.users.AddTempUser(newUser)
+	}
+	return nil
+}
+
+func (app *App) DebugToggle(g *gocui.Gui, v *gocui.View) error {
+	app.inputTemp.Visible = !app.inputTemp.Visible
+	if app.inputTemp.Visible {
+		app.users.view.FgColor = gocui.ColorCyan
+	} else {
+		app.users.view.FgColor = gocui.ColorYellow
+	}
+	return nil
+}
+
+// CloseTempUser closes text input
+func (app *App) CloseTempUser(g *gocui.Gui, v *gocui.View) error {
+	app.inputTemp.Close()
+	g.SetCurrentView(app.users.Name)
 	return nil
 }
 
@@ -120,11 +157,22 @@ func (app *App) Start(version string) error {
          version: %s`, version),
 	}
 
+	// temp user input
+	app.inputTemp = TextInput{
+		Name:    "tempuser",
+		x0:      maxX / 3,
+		y0:      maxY/2 - 1,
+		x1:      2 * maxX / 3,
+		y1:      maxY/2 + 1,
+		Visible: false,
+	}
+
 	// Set Update Manager, order is required
 	app.gui.SetManager(
 		&app.users,
 		&app.helpPopup,
 		&app.timer,
+		&app.inputTemp,
 	)
 
 	if view, err := app.gui.SetView("footer", -1, maxY-2, maxX, maxY, 0); err != nil {
@@ -143,7 +191,7 @@ func (app *App) Start(version string) error {
 	}); err != nil {
 		return err
 	}
-	if err := app.gui.SetKeybinding("", 'q', gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+	if err := app.gui.SetKeybinding(app.users.Name, 'q', gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 		// update current user if timer is running
 		if app.timer.running {
 			(*app.users.users)[app.users.current].Current = app.timer.value
@@ -154,50 +202,58 @@ func (app *App) Start(version string) error {
 	}
 
 	//  toggle help popup
-	if err := app.gui.SetKeybinding("", 'h', gocui.ModNone, app.helpPopup.ToggleVisible); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, 'h', gocui.ModNone, app.helpPopup.ToggleVisible); err != nil {
 		return err
 	}
 
 	// Start/stop timer
-	if err := app.gui.SetKeybinding("", gocui.KeySpace, gocui.ModNone, app.ToggleOnActive); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, gocui.KeySpace, gocui.ModNone, app.ToggleOnActive); err != nil {
 		return err
 	}
-	if err := app.gui.SetKeybinding("", gocui.KeyEnter, gocui.ModNone, app.ToggleOnActive); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, gocui.KeyEnter, gocui.ModNone, app.ToggleOnActive); err != nil {
 		return err
 	}
 
 	//  User list controls:
 	//  next
-	if err := app.gui.SetKeybinding("", gocui.KeyArrowDown, gocui.ModNone, app.NextUser); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, gocui.KeyArrowDown, gocui.ModNone, app.NextUser); err != nil {
 		return err
 	}
-	if err := app.gui.SetKeybinding("", 'j', gocui.ModNone, app.NextUser); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, 'j', gocui.ModNone, app.NextUser); err != nil {
 		return err
 	}
 	//  previous
-	if err := app.gui.SetKeybinding("", gocui.KeyArrowUp, gocui.ModNone, app.PrevUser); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, gocui.KeyArrowUp, gocui.ModNone, app.PrevUser); err != nil {
 		return err
 	}
-	if err := app.gui.SetKeybinding("", 'k', gocui.ModNone, app.PrevUser); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, 'k', gocui.ModNone, app.PrevUser); err != nil {
 		return err
 	}
 	//  show/hide user statistic
-	if err := app.gui.SetKeybinding("", 's', gocui.ModNone, app.users.ToggleStats); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, 's', gocui.ModNone, app.users.ToggleStats); err != nil {
 		return err
 	}
 	//  randomize user list
-	if err := app.gui.SetKeybinding("", 'r', gocui.ModAlt, func(*gocui.Gui, *gocui.View) error {
+	if err := app.gui.SetKeybinding(app.users.Name, 'r', gocui.ModAlt, func(*gocui.Gui, *gocui.View) error {
 		app.users.RandomizeOrder()
 		return nil
 	}); err != nil {
 		return err
 	}
 	//  toggle active/inactive users
-	if err := app.gui.SetKeybinding("", 'a', gocui.ModNone, app.users.ToggleActive); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, 'a', gocui.ModNone, app.users.ToggleActive); err != nil {
 		return err
 	}
 	//  opens window to insert a temp user
-	if err := app.gui.SetKeybinding("", 'i', gocui.ModNone, app.users.AddTempUser); err != nil {
+	if err := app.gui.SetKeybinding(app.users.Name, 'i', gocui.ModNone, app.OpenTempUser); err != nil {
+		return err
+	}
+
+	// User input keybindings
+	if err := app.gui.SetKeybinding(app.inputTemp.Name, gocui.KeyEnter, gocui.ModNone, app.AddTempUser); err != nil {
+		return err
+	}
+	if err := app.gui.SetKeybinding(app.inputTemp.Name, gocui.KeyEsc, gocui.ModNone, app.CloseTempUser); err != nil {
 		return err
 	}
 

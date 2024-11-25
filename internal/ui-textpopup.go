@@ -20,6 +20,7 @@ func (tp *TextPopup) Layout(g *gocui.Gui) error {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}
+		g.SetViewOnTop(tp.name)
 		v.WriteString(tp.text)
 		v.Visible = tp.visible
 	} else {

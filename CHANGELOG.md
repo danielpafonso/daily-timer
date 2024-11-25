@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add keybing/function to add Temp participant to current list
 - Field `AddTemp` to configuration that controls if a temp participant is written to stats files
+- Temp participant input widget
+- Update keybings to have possibilities of opening Temp input widget, accept or cancel addition
 
 ### Fix
 
@@ -21,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fix
 
 - Program crash by dividing by zero, when new elements were added to participants
-- Stop reseting first and last timer participant when moving up or down respectively
+- Stop resetting first and last timer participant when moving up or down respectively
 
 ## [0.0.2]
 

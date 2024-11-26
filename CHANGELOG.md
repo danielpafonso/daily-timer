@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0]
+
 ### Add
 
 - Add keybing/function to add Temp participant to current list
@@ -16,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fix
 
-- Crash when participant is in csv file and not on configuration list
+- (csv mode) Crash when participant is in stat file and not on configuration list
 
 ## [0.0.3]
 
@@ -52,7 +54,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v0.0.3...HEAD
+[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.0.0
 [0.0.3]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.3
 [0.0.2]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.2
 [0.0.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.1

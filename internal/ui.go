@@ -157,14 +157,24 @@ func (app *App) Start(version string) error {
          version: %s`, version),
 	}
 
+	// Set mininimal width equal to timer lenght
+	inputX0 := maxX / 3
+	inputX1 := 2 * maxX / 3
+	visil := false
+	if inputX1-inputX0 < 42 {
+		inputX0 = maxX/2 - 21
+		inputX1 = maxX/2 + 21
+		visil = true
+	}
 	// temp user input
 	app.inputTemp = TextInput{
 		Name:    "tempuser",
-		x0:      maxX / 3,
+		x0:      inputX0,
 		y0:      maxY/2 - 1,
-		x1:      2 * maxX / 3,
+		x1:      inputX1,
 		y1:      maxY/2 + 1,
-		Visible: false,
+		Visible: visil,
+		// Visible: false,
 	}
 
 	// Set Update Manager, order is required

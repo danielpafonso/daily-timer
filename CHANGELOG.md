@@ -7,9 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1]
+
 ### Add
 
 - Set mininal width to input participant widget, equal to timer size
+
+### Change
+
+- Exiting with `ctrl+c` wont write statistics to file
 
 ## [1.0.0]
 
@@ -58,7 +64,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.0.1
 [1.0.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.0.0
 [0.0.3]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.3
 [0.0.2]: https://github.com/danielpafonso/daily-timer/releases/tag/v0.0.2

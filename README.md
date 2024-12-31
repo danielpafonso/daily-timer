@@ -2,7 +2,9 @@
 
 A terminal timer for Daily Standups meetings
 
-![Hero screenshot](/docs/hero.png)
+<p align="center">
+  <img src="/docs/hero.png" alt="Hero screenshot"/>
+</p>
 
 ## Configurations
 

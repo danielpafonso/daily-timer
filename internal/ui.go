@@ -194,6 +194,8 @@ func (app *App) Start(version string) error {
 	// Set keybindings
 	//  exit application
 	if err := app.gui.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
+		// Clear stats so nothing is writting
+		*app.users.users = []Stats{}
 		return gocui.ErrQuit
 	}); err != nil {
 		return err

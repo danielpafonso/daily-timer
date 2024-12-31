@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Add
 
-- Set mininal width to input participant widget, equal to timer size
+- Set minimal width to input participant widget, equal to timer size
 
 ### Change
 

@@ -1,4 +1,4 @@
-.PHONY: full build copy clean
+.PHONY: full build copy clean plugins
 .SILENT: release
 
 FLAGS = -trimpath -a -ldflags '-w -s'
@@ -8,11 +8,16 @@ all: clean build csv copy
 
 build:
 	@mkdir -p build
-	CGO_ENABLED=1 go build $(FLAGS) -o ./build/daily-timer ./cmd/sqlite/
+	go build $(FLAGS) -o ./build/daily-timer ./cmd/sqlite/
 
 csv:
 	@mkdir -p build
-	CGO_ENABLED=0 go build $(FLAGS) -o ./build/daily-timer ./cmd/csv/
+	go build $(FLAGS) -o ./build/daily-timer ./cmd/csv/
+
+plugins:
+	@mkdir -p build
+	go build -buildmode=plugin $(FLAGS) -o ./build/csv.so ./plugins/csv/
+	#go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
 
 copy:
 	@mkdir -p build

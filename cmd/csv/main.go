@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"plugin"
 	"strings"
 
 	"daily-timer/internal"
+	"daily-timer/plugins"
 )
 
 const (
@@ -15,6 +17,28 @@ const (
 )
 
 func main() {
+	// test plugin
+	path := "csv.so"
+	// load plugin file
+	plugin, err := plugin.Open(path)
+	if err != nil {
+		log.Panic(err)
+	}
+	// lookup symbol in plugin
+	symbolPlugin, err := plugin.Lookup("FileOperations")
+	if err != nil {
+		log.Panic(err)
+	}
+
+	// reflect symbol to confirm correctness
+	fileOperations, ok := symbolPlugin.(plugins.FileOperations)
+	if !ok {
+		log.Panic("unexpected type from module symbol")
+	}
+
+	// run function
+	fileOperations.Load()
+
 	var configPath string
 	var showVersion bool
 

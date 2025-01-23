@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fix
+
+- Make clean target failing when build folder is not present
+
 ## [1.1.0]
 
 ### Add

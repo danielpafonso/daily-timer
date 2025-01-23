@@ -37,4 +37,4 @@ release:
 	printf "done\n"
 
 clean:
-	[ -d build ] && find build -maxdepth 1 -type f -delete
+	@if [ -d "./build" ]; then find build -maxdepth 1 -type f -delete; fi

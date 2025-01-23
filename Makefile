@@ -43,4 +43,4 @@ release:
 	printf "done\n"
 
 clean:
-	find build -maxdepth 1 -type f -delete
+	[ -d build ] && find build -maxdepth 1 -type f -delete

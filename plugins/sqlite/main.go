@@ -5,12 +5,23 @@ import (
 	"time"
 
 	"daily-timer/internal"
-	"daily-timer/internal/sqlite"
 )
 
-// GetStats retrives calculated states from db
-func GetStats(dbConn *sql.DB, participants []string, limitDailies int) ([]internal.Stats, error) {
-	sqlStats, err := sqlite.CalculateStats(dbConn, participants, limitDailies)
+type funcs struct {
+	dbConn *sql.DB
+}
+
+func (f *funcs) Connect(team string) error {
+	db, err := Open(team)
+	if err != nil {
+		return err
+	}
+	f.dbConn = db
+	return nil
+}
+
+func (f *funcs) GetStats(participants []string, limitDailies int) ([]internal.Stats, error) {
+	sqlStats, err := CalculateStats(f.dbConn, participants, limitDailies)
 	if err != nil {
 		return nil, err
 	}
@@ -43,30 +54,32 @@ func GetStats(dbConn *sql.DB, participants []string, limitDailies int) ([]intern
 	return outputStats, nil
 }
 
-// InsertDaily writes current daily session to db
-func InsertDaily(dbConn *sql.DB, stats *[]internal.Stats, writeTemp bool) error {
+func (f *funcs) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
 	now := time.Now()
-	insertData := make([]sqlite.Dailies, 0)
+	insertData := make([]Dailies, 0)
 	for _, stat := range *stats {
 		if stat.Temp {
 			if writeTemp {
-				insertData = append(insertData, sqlite.Dailies{
+				insertData = append(insertData, Dailies{
 					Name: stat.Name,
 					Date: now,
 					Time: stat.Current,
 				})
 			}
 		} else if stat.Active {
-			insertData = append(insertData, sqlite.Dailies{
+			insertData = append(insertData, Dailies{
 				Name: stat.Name,
 				Date: now,
 				Time: stat.Current,
 			})
 		}
 	}
-	err := sqlite.InsertDaily(dbConn, insertData)
+	err := InsertDaily(f.dbConn, insertData)
 	if err != nil {
 		return err
 	}
 	return nil
 }
+
+// Export symbols
+var FileOperations funcs

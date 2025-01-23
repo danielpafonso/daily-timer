@@ -1,23 +1,19 @@
-.PHONY: full build copy clean plugins
+.PHONY: all build copy clean plugins
 .SILENT: release
 
 FLAGS = -trimpath -a -ldflags '-w -s'
 
 
-all: clean build csv copy
+all: clean build copy plugins
 
 build:
 	@mkdir -p build
-	go build $(FLAGS) -o ./build/daily-timer ./cmd/sqlite/
-
-csv:
-	@mkdir -p build
-	go build $(FLAGS) -o ./build/daily-timer ./cmd/csv/
+	go build $(FLAGS) -o ./build/daily-timer ./cmd/
 
 plugins:
 	@mkdir -p build
 	go build -buildmode=plugin $(FLAGS) -o ./build/csv.so ./plugins/csv/
-	#go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
+	go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
 
 copy:
 	@mkdir -p build
@@ -26,20 +22,18 @@ copy:
 release:
 	mkdir -p build/release
 	cp config/config.template.json build/config.json
-	printf "Sqlite\n"
-	printf "  Building ..."
-	CGO_ENABLED=1 go build $(FLAGS) -o ./build/daily-timer ./cmd/sqlite/
+	printf "Building ...\n"
+	printf "  Binary\n"
+	go build $(FLAGS) -o ./build/daily-timer ./cmd/
+	printf "  Plugins\n"
+	# go build -buildmode=plugin $(FLAGS) -o ./build/csv.so ./plugins/csv/
+	# go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
 	printf "done\n"
-	printf "  Archiving ..."
-	tar -czf build/release/daily-timer-sqlite.tar.gz -C build daily-timer config.json
-	printf "done\n"
-	rm build/daily-timer
-	printf "CSV\n"
-	printf "  Building ..."
-	CGO_ENABLED=0 go build $(FLAGS) -o ./build/daily-timer ./cmd/csv/
-	printf "done\n"
-	printf "  Archiving ..."
-	tar -czf build/release/daily-timer-csv.tar.gz -C build daily-timer config.json
+	printf "Archiving ...\n"
+	printf "  Simple\n"
+	tar -czf build/release/daily-timer.tar.gz -C build daily-timer config.json sqlite.so
+	printf "  Full\n"
+	tar -czf build/release/daily-timer-full.tar.gz -C build daily-timer config.json sqlite.so csv.so
 	printf "done\n"
 
 clean:

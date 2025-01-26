@@ -93,16 +93,6 @@ func (app *App) AddTempUser(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
-func (app *App) DebugToggle(g *gocui.Gui, v *gocui.View) error {
-	app.inputTemp.Visible = !app.inputTemp.Visible
-	if app.inputTemp.Visible {
-		app.users.view.FgColor = gocui.ColorCyan
-	} else {
-		app.users.view.FgColor = gocui.ColorYellow
-	}
-	return nil
-}
-
 // CloseTempUser closes text input
 func (app *App) CloseTempUser(g *gocui.Gui, v *gocui.View) error {
 	app.inputTemp.Close()

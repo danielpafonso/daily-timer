@@ -285,6 +285,10 @@ func (app *App) Start(version string) error {
 	if err := app.gui.SetKeybinding(app.users.Name, 'i', gocui.ModNone, app.OpenTempUser); err != nil {
 		return err
 	}
+	//  toggle user list flash
+	if err := app.gui.SetKeybinding(app.users.Name, 'f', gocui.ModAlt, app.users.ToogleFlash); err != nil {
+		return nil
+	}
 
 	// User input keybindings
 	if err := app.gui.SetKeybinding(app.inputTemp.Name, gocui.KeyEnter, gocui.ModNone, app.AddTempUser); err != nil {

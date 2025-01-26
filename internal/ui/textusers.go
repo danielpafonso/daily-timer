@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strings"
+	"time"
 
 	"github.com/awesome-gocui/gocui"
 
@@ -20,6 +21,15 @@ type TextUsers struct {
 	showStats bool
 	x0, y0    int
 	x1, y1    int
+	flash     bool
+	flashIdx  int
+	nextFlash time.Time
+}
+
+var flashColors []gocui.Attribute = []gocui.Attribute{
+	gocui.ColorBlue,
+	gocui.ColorRed,
+	gocui.ColorWhite,
 }
 
 // RandomizeOrder randomizes the user list
@@ -126,6 +136,12 @@ func (tu *TextUsers) ToggleActive(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+// ToogleFlash set user list to flash
+func (tu *TextUsers) ToogleFlash(g *gocui.Gui, v *gocui.View) error {
+	tu.flash = !tu.flash
+	return nil
+}
+
 // Layout creates/updates users widget
 func (tu *TextUsers) Layout(g *gocui.Gui) error {
 	if view, err := g.SetView(tu.Name, tu.x0, tu.y0, tu.x1, tu.y1, 0); err != nil {
@@ -153,6 +169,17 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 
 		tu.view.Clear()
 		tu.view.WriteString(strings.Join(lines, "\n"))
+		// flash
+		if tu.flash && time.Now().After(tu.nextFlash) {
+			tu.view.FgColor = flashColors[tu.flashIdx]
+			tu.flashIdx += 1
+			tu.nextFlash = time.Now().Add(1 * time.Second)
+			if tu.flashIdx == len(flashColors) {
+				tu.flashIdx = 0
+			}
+		} else {
+			tu.view.FgColor = gocui.ColorWhite
+		}
 	}
 	return nil
 }

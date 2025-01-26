@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Add
+
+- Add Flash mode to participant list
+
 ### Fix
 
 - Make clean target failing when build folder is not present
+
+### Remove
+
+- Debug function, not used
 
 ## [1.1.0]
 

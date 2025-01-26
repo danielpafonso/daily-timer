@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"daily-timer/internal"
+	"daily-timer/internal/ui"
 	"daily-timer/plugins"
 )
 
@@ -74,7 +75,7 @@ func main() {
 	defer fileOperations.InsertDailies(&stats, configs.AddTemp)
 
 	// Initialize ui
-	appUI := internal.NewAppUI(*configs, &stats)
+	appUI := ui.NewAppUI(*configs, &stats)
 
 	// Start ui
 	err = appUI.Start(Version)

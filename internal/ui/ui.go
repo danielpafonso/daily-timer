@@ -1,22 +1,25 @@
-package internal
+package ui
 
 import (
 	"errors"
 	"fmt"
 
 	"github.com/awesome-gocui/gocui"
+
+	"daily-timer/internal"
 )
 
 type App struct {
-	gui       *gocui.Gui
-	timer     Timer
-	users     TextUsers
-	helpPopup TextPopup
-	inputTemp TextInput
+	gui         *gocui.Gui
+	timer       Timer
+	users       TextUsers
+	helpPopup   TextPopup
+	hiddenPopup TextPopup
+	inputTemp   TextInput
 }
 
 // NewAppUI initiates new UI
-func NewAppUI(config Configurations, stats *[]Stats) *App {
+func NewAppUI(config internal.Configurations, stats *[]internal.Stats) *App {
 	newApp := App{
 		timer: Timer{
 			warning:   config.Warning,
@@ -140,7 +143,7 @@ func (app *App) Start(version string) error {
 		x0:      maxX/2 - 17,
 		y0:      maxY/2 - 7,
 		x1:      maxX/2 + 17,
-		y1:      maxY/2 + 7,
+		y1:      maxY/2 + 8,
 		visible: false,
 		text: fmt.Sprintf(`          Key  Mapping
 
@@ -153,6 +156,26 @@ func (app *App) Start(version string) error {
 
  <s> Show/Hide statistics
  <a> Toggle user active/inactive
+ <i> Add temporary user
+
+         version: %s`, version),
+	}
+
+	//  hidden help popup
+	app.hiddenPopup = TextPopup{
+		name:    "hidden",
+		x0:      maxX/2 - 17,
+		y0:      maxY/2 - 5,
+		x1:      maxX/2 + 17,
+		y1:      maxY/2 + 5,
+		visible: false,
+		text: fmt.Sprintf(`          Key  Mapping
+
+ <alt+h> Show/Hide this menu
+
+ <alt+r> Randomize users
+
+ <alt+f> Toggle Flash users
 
          version: %s`, version),
 	}
@@ -178,6 +201,7 @@ func (app *App) Start(version string) error {
 	app.gui.SetManager(
 		&app.users,
 		&app.helpPopup,
+		&app.hiddenPopup,
 		&app.timer,
 		&app.inputTemp,
 	)
@@ -195,7 +219,7 @@ func (app *App) Start(version string) error {
 	//  exit application
 	if err := app.gui.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, func(g *gocui.Gui, v *gocui.View) error {
 		// Clear stats so nothing is writting
-		*app.users.users = []Stats{}
+		*app.users.users = []internal.Stats{}
 		return gocui.ErrQuit
 	}); err != nil {
 		return err
@@ -212,6 +236,10 @@ func (app *App) Start(version string) error {
 
 	//  toggle help popup
 	if err := app.gui.SetKeybinding(app.users.Name, 'h', gocui.ModNone, app.helpPopup.ToggleVisible); err != nil {
+		return err
+	}
+	// toggle hidden help Popup
+	if err := app.gui.SetKeybinding(app.users.Name, 'h', gocui.ModAlt, app.hiddenPopup.ToggleVisible); err != nil {
 		return err
 	}
 

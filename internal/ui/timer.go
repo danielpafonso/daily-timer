@@ -1,10 +1,12 @@
-package internal
+package ui
 
 import (
 	"errors"
 	"time"
 
 	"github.com/awesome-gocui/gocui"
+
+	"daily-timer/internal"
 )
 
 var (
@@ -141,13 +143,13 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[tm.minute10.value])
+		view.WriteString(internal.Digits[tm.minute10.value])
 		view.Frame = false
 		g.SetViewOnBottom("minute-10")
 		tm.minute10.view = view
 	} else {
 		tm.minute10.view.Clear()
-		tm.minute10.view.WriteString(Digits[tm.minute10.value])
+		tm.minute10.view.WriteString(internal.Digits[tm.minute10.value])
 	}
 	// minute 1s
 	diff = 9
@@ -156,13 +158,13 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[tm.minute1.value])
+		view.WriteString(internal.Digits[tm.minute1.value])
 		view.Frame = false
 		g.SetViewOnBottom("minute-1")
 		tm.minute1.view = view
 	} else {
 		tm.minute1.view.Clear()
-		tm.minute1.view.WriteString(Digits[tm.minute1.value])
+		tm.minute1.view.WriteString(internal.Digits[tm.minute1.value])
 	}
 
 	// dots view
@@ -171,7 +173,7 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Dots)
+		view.WriteString(internal.Dots)
 		view.Frame = false
 		g.SetViewOnBottom("dots")
 		tm.dots = view
@@ -183,13 +185,13 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[tm.second10.value])
+		view.WriteString(internal.Digits[tm.second10.value])
 		view.Frame = false
 		tm.second10.view = view
 		g.SetViewOnBottom("second-10")
 	} else {
 		tm.second10.view.Clear()
-		tm.second10.view.WriteString(Digits[tm.second10.value])
+		tm.second10.view.WriteString(internal.Digits[tm.second10.value])
 	}
 	// second 1s
 	diff = 15
@@ -198,13 +200,13 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 			return err
 		}
 		view.FgColor = colorStop
-		view.WriteString(Digits[tm.second1.value])
+		view.WriteString(internal.Digits[tm.second1.value])
 		view.Frame = false
 		tm.second1.view = view
 		g.SetViewOnBottom("second-1")
 	} else {
 		tm.second1.view.Clear()
-		tm.second1.view.WriteString(Digits[tm.second1.value])
+		tm.second1.view.WriteString(internal.Digits[tm.second1.value])
 	}
 	return nil
 }

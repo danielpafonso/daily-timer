@@ -1,4 +1,4 @@
-package internal
+package ui
 
 import (
 	"errors"
@@ -7,12 +7,14 @@ import (
 	"strings"
 
 	"github.com/awesome-gocui/gocui"
+
+	"daily-timer/internal"
 )
 
 type TextUsers struct {
 	Name      string
 	view      *gocui.View
-	users     *[]Stats
+	users     *[]internal.Stats
 	padding   int
 	current   int
 	showStats bool
@@ -103,7 +105,7 @@ func (tu *TextUsers) AddTempUser(userName string) {
 		}
 	}
 	// adds new user
-	*tu.users = append(*tu.users, Stats{
+	*tu.users = append(*tu.users, internal.Stats{
 		Name:   userName,
 		Active: true,
 		Temp:   true,

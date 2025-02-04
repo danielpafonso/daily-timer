@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Add
 
 - Add Flash mode to participant list
+- Loop Jump, making participant list circular
 
 ### Fix
 

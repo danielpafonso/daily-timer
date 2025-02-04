@@ -74,29 +74,22 @@ func (tu *TextUsers) calculatePadding() {
 
 // ChangeUser moves selection to previous or nex user on the list
 func (tu *TextUsers) ChangeUser(delta int, timer int, running bool) int {
-	// no lool change, short circuit
-	if tu.current+delta < 0 || tu.current+delta == len(*tu.users) {
-		return -1
-	}
-	// "infinite" loop to jump over inactive users
 	newUser := tu.current
 	for {
 		newUser += delta
-		// only on jump if timer isn't runnig, also skip inactive check
+		// loop users list
+		if newUser == len(*tu.users) {
+			newUser = 0
+		} else if newUser < 0 {
+			newUser = len(*tu.users) - 1
+		}
+		// only on jump multiple users if timer isn't runnig, also skip inactive check
 		if !running {
 			break
-		}
-		// no loop change
-		if newUser < 0 {
-			return (*tu.users)[tu.current].Current
-		}
-		if newUser == len(*tu.users) {
-			return (*tu.users)[tu.current].Current
 		}
 		if (*tu.users)[newUser].Active {
 			break
 		}
-
 	}
 	// update old
 	(*tu.users)[tu.current].Current = timer

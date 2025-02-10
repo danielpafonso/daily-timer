@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Add Flash mode to participant list
 - Loop Jump, making participant list circular
+- Reactability with windows size change
 
 ### Fix
 

@@ -16,7 +16,8 @@ type TextPopup struct {
 
 // Layout creates/updates help popup widget
 func (tp *TextPopup) Layout(g *gocui.Gui) error {
-	if v, err := g.SetView(tp.name, tp.x0, tp.y0, tp.x1, tp.y1, 0); err != nil {
+	maxX, maxY := g.Size()
+	if v, err := g.SetView(tp.name, maxX/2+tp.x0, maxY/2+tp.y0, maxX/2+tp.x1, maxY/2+tp.y1, 0); err != nil {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}

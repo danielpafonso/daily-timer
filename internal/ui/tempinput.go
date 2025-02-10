@@ -16,7 +16,16 @@ type TextInput struct {
 
 // Layout creates/updates users widget
 func (ti *TextInput) Layout(g *gocui.Gui) error {
-	if v, err := g.SetView(ti.Name, ti.x0, ti.y0, ti.x1, ti.y1, 0); err != nil {
+	maxX, maxY := g.Size()
+	// Set mininimal width equal to timer lenght
+	inputX0 := maxX / 3
+	inputX1 := 2 * maxX / 3
+	if inputX1-inputX0 < 42 {
+		inputX0 = maxX/2 - 21
+		inputX1 = maxX/2 + 21
+	}
+
+	if v, err := g.SetView(ti.Name, inputX0, maxY/2-1, inputX1, maxY/2+1, 0); err != nil {
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
 		}

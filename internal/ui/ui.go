@@ -124,16 +124,16 @@ func (app *App) Start(version string) error {
 	//  user list
 	app.users.x0 = 0
 	app.users.y0 = 8
-	app.users.x1 = maxX - 1
-	app.users.y1 = maxY - 2
+	app.users.x1 = -1
+	app.users.y1 = -2
 
 	//  help popup
 	app.helpPopup = TextPopup{
 		name:    "help",
-		x0:      maxX/2 - 17,
-		y0:      maxY/2 - 7,
-		x1:      maxX/2 + 17,
-		y1:      maxY/2 + 8,
+		x0:      -17,
+		y0:      -7,
+		x1:      17,
+		y1:      8,
 		visible: false,
 		text: fmt.Sprintf(`          Key  Mapping
 
@@ -154,10 +154,10 @@ func (app *App) Start(version string) error {
 	//  hidden help popup
 	app.hiddenPopup = TextPopup{
 		name:    "hidden",
-		x0:      maxX/2 - 17,
-		y0:      maxY/2 - 5,
-		x1:      maxX/2 + 17,
-		y1:      maxY/2 + 5,
+		x0:      -17,
+		y0:      -5,
+		x1:      17,
+		y1:      5,
 		visible: false,
 		text: fmt.Sprintf(`          Key  Mapping
 
@@ -195,15 +195,6 @@ func (app *App) Start(version string) error {
 		&app.timer,
 		&app.inputTemp,
 	)
-
-	if view, err := app.gui.SetView("footer", -1, maxY-2, maxX, maxY, 0); err != nil {
-		if !errors.Is(err, gocui.ErrUnknownView) {
-			return err
-		}
-		helpLine := "<q> exit    <h> help menu"
-		view.SetWritePos(maxX/2-len(helpLine)/2, 0)
-		view.WriteString(helpLine)
-	}
 
 	// Set keybindings
 	//  exit application

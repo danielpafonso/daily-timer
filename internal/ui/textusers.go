@@ -137,7 +137,9 @@ func (tu *TextUsers) ToogleFlash(g *gocui.Gui, v *gocui.View) error {
 
 // Layout creates/updates users widget
 func (tu *TextUsers) Layout(g *gocui.Gui) error {
-	if view, err := g.SetView(tu.Name, tu.x0, tu.y0, tu.x1, tu.y1, 0); err != nil {
+	maxX, maxY := g.Size()
+	// users list
+	if view, err := g.SetView(tu.Name, tu.x0, tu.y0, maxX+tu.x1, maxY+tu.y1, 0); err != nil {
 		// Create view
 		if !errors.Is(err, gocui.ErrUnknownView) {
 			return err
@@ -173,6 +175,20 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 		} else {
 			tu.view.FgColor = gocui.ColorWhite
 		}
+	}
+
+	// help footer
+	helpLine := "<q> exit    <h> help menu"
+	if view, err := g.SetView(tu.Name+"-footer", -1, maxY-2, maxX, maxY, 0); err != nil {
+		if !errors.Is(err, gocui.ErrUnknownView) {
+			return err
+		}
+		view.SetWritePos(maxX/2-len(helpLine)/2, 0)
+		view.WriteString(helpLine)
+	} else {
+		view.Clear()
+		view.SetWritePos(maxX/2-len(helpLine)/2, 0)
+		view.WriteString(helpLine)
 	}
 	return nil
 }

@@ -15,6 +15,7 @@ type App struct {
 	users       TextUsers
 	helpPopup   TextPopup
 	hiddenPopup TextPopup
+	configPopup TextPopup
 	inputTemp   TextInput
 }
 
@@ -31,6 +32,22 @@ func NewAppUI(config internal.Configurations, stats *[]internal.Stats) *App {
 			Name:      "users",
 			showStats: config.Status.Display,
 			users:     stats,
+		},
+		configPopup: TextPopup{
+			name:    "configHelp",
+			x0:      -10,
+			y0:      -4,
+			x1:      10,
+			y1:      5,
+			visible: false,
+			text: fmt.Sprintf(`      Configs
+
+ time: %d
+ warning: %d
+ random: %v
+ stopwatch: %v
+ add temp: %v
+ last dailies: %d`, config.Time, config.Warning, config.Random, config.Stopwatch, config.AddTemp, config.Status.LastDailies),
 		},
 	}
 	// calculate user padding
@@ -192,6 +209,7 @@ func (app *App) Start(version string) error {
 		&app.users,
 		&app.helpPopup,
 		&app.hiddenPopup,
+		&app.configPopup,
 		&app.timer,
 		&app.inputTemp,
 	)
@@ -221,6 +239,10 @@ func (app *App) Start(version string) error {
 	}
 	// toggle hidden help Popup
 	if err := app.gui.SetKeybinding(app.users.Name, 'h', gocui.ModAlt, app.hiddenPopup.ToggleVisible); err != nil {
+		return err
+	}
+	// toggle config Popup
+	if err := app.gui.SetKeybinding(app.users.Name, 'c', gocui.ModAlt, app.configPopup.ToggleVisible); err != nil {
 		return err
 	}
 

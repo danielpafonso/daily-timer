@@ -130,6 +130,7 @@ func (app *App) Start(version string) error {
 	maxX, maxY := app.gui.Size()
 
 	// Create views
+
 	//  timer view(s)
 	app.timer.midX = maxX/2 - 2
 	app.timer.topY = 0
@@ -187,7 +188,7 @@ func (app *App) Start(version string) error {
          version: %s`, version),
 	}
 
-	// Set mininimal width equal to timer lenght
+	// Set minimal width equal to timer lenght
 	inputX0 := maxX / 3
 	inputX1 := 2 * maxX / 3
 	if inputX1-inputX0 < 42 {
@@ -213,6 +214,17 @@ func (app *App) Start(version string) error {
 		&app.timer,
 		&app.inputTemp,
 	)
+
+	//  minimal size
+	if view, err := app.gui.SetView("sizewarning", 0, 0, 50, 21, 0); err != nil {
+		if !errors.Is(err, gocui.ErrUnknownView) {
+			return err
+		}
+		// view.SetWritePos(25, 5)
+		view.WriteString("Mininal size required:\n      50 x 21")
+		// view.Frame = false
+		app.gui.SetViewOnBottom("sizewarning")
+	}
 
 	// Set keybindings
 	//  exit application

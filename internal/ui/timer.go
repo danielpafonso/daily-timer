@@ -136,7 +136,7 @@ func (tm *Timer) internalTicket(updateCh chan<- func(g *gocui.Gui) error) {
 
 // Layout creates/updates timer widget
 func (tm *Timer) Layout(g *gocui.Gui) error {
-	maxX, _ := g.Size()
+	maxX, maxY := g.Size()
 	tm.midX = maxX/2 - 2
 	// minute 10s
 	diff := 19
@@ -210,5 +210,14 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		tm.second1.view.Clear()
 		tm.second1.view.WriteString(internal.Digits[tm.second1.value])
 	}
+	mininalSize := true
+	if maxX <= 50 && maxY <= 21 {
+		mininalSize = false
+	}
+	tm.minute10.view.Visible = mininalSize
+	tm.minute1.view.Visible = mininalSize
+	tm.second10.view.Visible = mininalSize
+	tm.second1.view.Visible = mininalSize
+	tm.dots.Visible = mininalSize
 	return nil
 }

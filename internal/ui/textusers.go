@@ -24,6 +24,8 @@ type TextUsers struct {
 	flash     bool
 	flashIdx  int
 	nextFlash time.Time
+	minimalX  int
+	minimalY  int
 }
 
 var flashColors []gocui.Attribute = []gocui.Attribute{
@@ -138,6 +140,7 @@ func (tu *TextUsers) ToogleFlash(g *gocui.Gui, v *gocui.View) error {
 // Layout creates/updates users widget
 func (tu *TextUsers) Layout(g *gocui.Gui) error {
 	maxX, maxY := g.Size()
+	minimalSize := maxX >= tu.minimalX && maxY >= tu.minimalY
 	// users list
 	if view, err := g.SetView(tu.Name, tu.x0, tu.y0, maxX+tu.x1, maxY+tu.y1, 0); err != nil {
 		// Create view
@@ -146,6 +149,7 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 		}
 		view.Frame = false
 		view.Wrap = false
+		view.Visible = minimalSize
 		// view.WriteString("one\ntwo\nthree")
 		lines := make([]string, len(*tu.users))
 		for idx := range *tu.users {
@@ -162,6 +166,7 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 			lines[idx] = tu.UserLine(idx)
 		}
 
+		tu.view.Visible = minimalSize
 		tu.view.Clear()
 		tu.view.WriteString(strings.Join(lines, "\n"))
 		// flash
@@ -185,7 +190,9 @@ func (tu *TextUsers) Layout(g *gocui.Gui) error {
 		}
 		view.SetWritePos(maxX/2-len(helpLine)/2, 0)
 		view.WriteString(helpLine)
+		view.Visible = minimalSize
 	} else {
+		view.Visible = minimalSize
 		view.Clear()
 		view.SetWritePos(maxX/2-len(helpLine)/2, 0)
 		view.WriteString(helpLine)

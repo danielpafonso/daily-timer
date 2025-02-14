@@ -40,6 +40,8 @@ type Timer struct {
 	nextTick  time.Time
 	running   bool
 	stopwatch bool
+	minimalX  int
+	minimalY  int
 }
 
 func (tm *Timer) setColor(color gocui.Attribute) {
@@ -136,7 +138,7 @@ func (tm *Timer) internalTicket(updateCh chan<- func(g *gocui.Gui) error) {
 
 // Layout creates/updates timer widget
 func (tm *Timer) Layout(g *gocui.Gui) error {
-	maxX, _ := g.Size()
+	maxX, maxY := g.Size()
 	tm.midX = maxX/2 - 2
 	// minute 10s
 	diff := 19
@@ -210,5 +212,12 @@ func (tm *Timer) Layout(g *gocui.Gui) error {
 		tm.second1.view.Clear()
 		tm.second1.view.WriteString(internal.Digits[tm.second1.value])
 	}
+
+	minimalSize := maxX >= tm.minimalX && maxY >= tm.minimalY
+	tm.minute10.view.Visible = minimalSize
+	tm.minute1.view.Visible = minimalSize
+	tm.second10.view.Visible = minimalSize
+	tm.second1.view.Visible = minimalSize
+	tm.dots.Visible = minimalSize
 	return nil
 }

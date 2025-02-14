@@ -12,6 +12,7 @@ import (
 type App struct {
 	gui         *gocui.Gui
 	timer       Timer
+	warning     TextWarning
 	users       TextUsers
 	helpPopup   TextPopup
 	hiddenPopup TextPopup
@@ -21,17 +22,29 @@ type App struct {
 
 // NewAppUI initiates new UI
 func NewAppUI(config internal.Configurations, stats *[]internal.Stats) *App {
+	minimalX := 50
+	minimalY := 21
+
 	newApp := App{
 		timer: Timer{
 			warning:   config.Warning,
 			limit:     config.Time,
 			running:   false,
 			stopwatch: config.Stopwatch,
+			minimalX:  minimalX,
+			minimalY:  minimalY,
+		},
+		warning: TextWarning{
+			Name:     "warningView",
+			minimalX: minimalX,
+			minimalY: minimalY,
 		},
 		users: TextUsers{
 			Name:      "users",
 			showStats: config.Status.Display,
 			users:     stats,
+			minimalX:  minimalX,
+			minimalY:  minimalY,
 		},
 		configPopup: TextPopup{
 			name:    "configHelp",
@@ -130,6 +143,7 @@ func (app *App) Start(version string) error {
 	maxX, maxY := app.gui.Size()
 
 	// Create views
+
 	//  timer view(s)
 	app.timer.midX = maxX/2 - 2
 	app.timer.topY = 0
@@ -187,7 +201,7 @@ func (app *App) Start(version string) error {
          version: %s`, version),
 	}
 
-	// Set mininimal width equal to timer lenght
+	// Set minimal width equal to timer lenght
 	inputX0 := maxX / 3
 	inputX1 := 2 * maxX / 3
 	if inputX1-inputX0 < 42 {
@@ -206,6 +220,7 @@ func (app *App) Start(version string) error {
 
 	// Set Update Manager, order is required
 	app.gui.SetManager(
+		&app.warning,
 		&app.users,
 		&app.helpPopup,
 		&app.hiddenPopup,

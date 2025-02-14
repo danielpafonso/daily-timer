@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Loop Jump, making participant list circular
 - Reactability with windows size change
 - Add config popup and keybinding
+- Add minimal size warning view
 
 ### Fix
 

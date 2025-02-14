@@ -26,8 +26,8 @@ release:
 	printf "  Binary\n"
 	go build $(FLAGS) -o ./build/daily-timer ./cmd/
 	printf "  Plugins\n"
-	# go build -buildmode=plugin $(FLAGS) -o ./build/csv.so ./plugins/csv/
-	# go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
+	go build -buildmode=plugin $(FLAGS) -o ./build/csv.so ./plugins/csv/
+	go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
 	printf "done\n"
 	printf "Archiving ...\n"
 	printf "  Simple\n"

@@ -36,7 +36,17 @@ var flashColors []gocui.Attribute = []gocui.Attribute{
 
 // RandomizeOrder randomizes the user list
 func (tu *TextUsers) RandomizeOrder() {
+	// save current user
+	currentUser := (*tu.users)[tu.current]
+	// randomize user order
 	rand.Shuffle(len(*tu.users), func(i, j int) { (*tu.users)[i], (*tu.users)[j] = (*tu.users)[j], (*tu.users)[i] })
+	// search users and update current user
+	for idx, user := range *tu.users {
+		if user == currentUser {
+			tu.current = idx
+			return
+		}
+	}
 }
 
 // UserLine generates string line to display with user information

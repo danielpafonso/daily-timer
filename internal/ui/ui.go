@@ -186,9 +186,9 @@ func (app *App) Start(version string) error {
 	app.hiddenPopup = TextPopup{
 		name:    "hidden",
 		x0:      -17,
-		y0:      -5,
+		y0:      -6,
 		x1:      17,
-		y1:      5,
+		y1:      6,
 		visible: false,
 		text: fmt.Sprintf(`          Key  Mapping
 
@@ -197,6 +197,8 @@ func (app *App) Start(version string) error {
  <alt+r> Randomize users
 
  <alt+f> Toggle Flash users
+
+ <alt+c> Show configuration
 
          version: %s`, version),
 	}

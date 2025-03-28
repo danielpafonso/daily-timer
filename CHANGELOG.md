@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Add
+
+- "Show configuration" keybing entry to help menu
+
+### Change
+
+- Randomize participant list now keeps current user selected
+
 ## [1.2.0]
 
 ### Add

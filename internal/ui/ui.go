@@ -68,6 +68,8 @@ func NewAppUI(config internal.Configurations, stats *[]internal.Stats) *App {
 	// randomize order if desired
 	if config.Random {
 		newApp.users.RandomizeOrder()
+		// set current user to start of list
+		newApp.users.current = 0
 	}
 
 	return &newApp

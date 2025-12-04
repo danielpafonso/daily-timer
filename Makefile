@@ -1,7 +1,7 @@
 .PHONY: all build copy clean plugins
 .SILENT: release
 
-FLAGS = -trimpath -a -ldflags '-w -s'
+FLAGS = -trimpath -ldflags '-w -s'
 
 
 all: clean build copy plugins

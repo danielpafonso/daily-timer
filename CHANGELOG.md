@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Change
 
 - Randomize participant list now keeps current user selected
+- Start randomize list keep first user selected
+- Faster Makefile builds
 
 ## [1.2.0]
 

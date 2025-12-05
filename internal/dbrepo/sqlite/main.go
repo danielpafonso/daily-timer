@@ -1,4 +1,4 @@
-package main
+package sqlite
 
 import (
 	"database/sql"
@@ -7,11 +7,11 @@ import (
 	"daily-timer/internal"
 )
 
-type funcs struct {
+type FileOperations struct {
 	dbConn *sql.DB
 }
 
-func (f *funcs) Connect(team string) error {
+func (f *FileOperations) Connect(team string) error {
 	db, err := Open(team)
 	if err != nil {
 		return err
@@ -20,7 +20,7 @@ func (f *funcs) Connect(team string) error {
 	return nil
 }
 
-func (f *funcs) GetStats(participants []string, limitDailies int) ([]internal.Stats, error) {
+func (f *FileOperations) GetStats(participants []string, limitDailies int) ([]internal.Stats, error) {
 	sqlStats, err := CalculateStats(f.dbConn, participants, limitDailies)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (f *funcs) GetStats(participants []string, limitDailies int) ([]internal.St
 	return outputStats, nil
 }
 
-func (f *funcs) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
+func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
 	now := time.Now()
 	insertData := make([]Dailies, 0)
 	for _, stat := range *stats {
@@ -80,6 +80,3 @@ func (f *funcs) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
 	}
 	return nil
 }
-
-// Export symbols
-var FileOperations funcs

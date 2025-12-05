@@ -1,4 +1,4 @@
-package main
+package csv
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"daily-timer/internal"
 )
 
-type funcs struct {
+type FileOperations struct {
 	filePath string
 }
 
@@ -20,12 +20,12 @@ type pastData struct {
 	data  []int
 }
 
-func (f *funcs) Connect(connectString string) error {
+func (f *FileOperations) Connect(connectString string) error {
 	f.filePath = fmt.Sprintf("stat-%s.csv", connectString)
 	return nil
 }
 
-func (f *funcs) GetStats(participants []string, limitDailies int) ([]internal.Stats, error) {
+func (f *FileOperations) GetStats(participants []string, limitDailies int) ([]internal.Stats, error) {
 	// short-circuit when limitDailies is zero, or stat file does not exist
 	if _, ok := os.Stat(f.filePath); ok != nil || limitDailies == 0 {
 		outputStats := make([]internal.Stats, 0)
@@ -85,7 +85,8 @@ func (f *funcs) GetStats(participants []string, limitDailies int) ([]internal.St
 		}
 		sum := 0
 		maxValue := 0
-		for i := 0; i < limit; i++ {
+		// for i := 0; i < limit; i++ {
+		for i := range limit {
 			sum += past.data[i]
 			maxValue = max(maxValue, past.data[i])
 		}
@@ -101,7 +102,7 @@ func (f *funcs) GetStats(participants []string, limitDailies int) ([]internal.St
 	return outputStats, nil
 }
 
-func (f *funcs) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
+func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
 	var file *os.File
 	var err error
 	// check if file don't exists, if so writes header
@@ -122,24 +123,21 @@ func (f *funcs) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
 	for _, stat := range *stats {
 		if stat.Temp {
 			if writeTemp {
-				file.WriteString(fmt.Sprintf(
+				fmt.Fprintf(file,
 					"%s,%s,%d\n",
 					now.Format("2006-01-02 15:04:05.999"),
 					stat.Name,
 					stat.Current,
-				))
+				)
 			}
 		} else if stat.Active {
-			file.WriteString(fmt.Sprintf(
+			fmt.Fprintf(file,
 				"%s,%s,%d\n",
 				now.Format("2006-01-02 15:04:05.999"),
 				stat.Name,
 				stat.Current,
-			))
+			)
 		}
 	}
 	return nil
 }
-
-// Export symbols
-var FileOperations funcs

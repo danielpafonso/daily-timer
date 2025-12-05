@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0]
+
+### Add
+
+- Windows build
+
+### Change
+
+- Move way from plugins to enable windows builds
+
 ## [1.2.1]
 
 ### Add
@@ -106,7 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.2.1...HEAD
+[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.3.0
 [1.2.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.2.1
 [1.2.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.2.0
 [1.1.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.1.0

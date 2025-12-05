@@ -4,36 +4,38 @@
 FLAGS = -trimpath -ldflags '-w -s'
 
 
-all: clean build copy plugins
+all: clean build copy
 
 build:
 	@mkdir -p build
 	go build $(FLAGS) -o ./build/daily-timer ./cmd/
 
-plugins:
+windows:
 	@mkdir -p build
-	go build -buildmode=plugin $(FLAGS) -o ./build/csv.so ./plugins/csv/
-	go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
+	CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build $(FLAGS) -o ./build/daily-timer.exe ./cmd/
 
 copy:
 	@mkdir -p build
 	cp config/config.template.json build/config.json
 
+
 release:
 	mkdir -p build/release
 	cp config/config.template.json build/config.json
+	#
 	printf "Building ...\n"
-	printf "  Binary\n"
+	printf "  Linux\n"
 	go build $(FLAGS) -o ./build/daily-timer ./cmd/
-	printf "  Plugins\n"
-	go build -buildmode=plugin $(FLAGS) -o ./build/csv.so ./plugins/csv/
-	go build -buildmode=plugin $(FLAGS) -o ./build/sqlite.so ./plugins/sqlite/
+	#
+	printf "  Windows\n"
+	CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build $(FLAGS) -o ./build/daily-timer.exe ./cmd/
 	printf "done\n"
+	#
 	printf "Archiving ...\n"
-	printf "  Simple\n"
-	tar -czf build/release/daily-timer.tar.gz -C build daily-timer config.json sqlite.so
-	printf "  Full\n"
-	tar -czf build/release/daily-timer-full.tar.gz -C build daily-timer config.json sqlite.so csv.so
+	printf "  Linux\n"
+	tar -czf build/release/daily-timer-linux.tar.gz -C build daily-timer config.json 
+	printf "  Windows\n"
+	zip -9 -q -j build/release/da2ily-timer-windows.zip build/daily-timer.exe build/config.json
 	printf "done\n"
 
 clean:

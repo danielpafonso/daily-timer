@@ -35,7 +35,7 @@ release:
 	printf "  Linux\n"
 	tar -czf build/release/daily-timer-linux.tar.gz -C build daily-timer config.json 
 	printf "  Windows\n"
-	zip -9 -q -j build/release/da2ily-timer-windows.zip build/daily-timer.exe build/config.json
+	zip -9 -q -j build/release/daily-timer-windows.zip build/daily-timer.exe build/config.json
 	printf "done\n"
 
 clean:

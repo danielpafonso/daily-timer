@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
-	"plugin"
 	"strings"
 
 	"daily-timer/internal"
+	"daily-timer/internal/dbrepo"
+	"daily-timer/internal/dbrepo/csv"
+	"daily-timer/internal/dbrepo/sqlite"
 	"daily-timer/internal/ui"
-	"daily-timer/plugins"
 )
 
 const (
@@ -21,6 +22,7 @@ func main() {
 	var configPath string
 	var fileMode string
 	var showVersion bool
+	var fileOperations dbrepo.FileOperations
 
 	flag.StringVar(&configPath, "c", "config.json", "Path to configuration file.")
 	flag.StringVar(&fileMode, "m", "sqlite", "Stat file interface, possible values: [sqlite, csv]. Defaults to sqlite.")
@@ -32,27 +34,13 @@ func main() {
 		return
 	}
 
-	var path string
-	if fileMode == "sqlite" {
-		path = "sqlite.so"
-	} else if fileMode == "csv" {
-		path = "csv.so"
-	} else {
+	switch fileMode {
+	case "sqlite":
+		fileOperations = &sqlite.FileOperations{}
+	case "csv":
+		fileOperations = &csv.FileOperations{}
+	default:
 		log.Panicf("unexpected file interface, %s", fileMode)
-		return
-	}
-	// load plugin for file operations
-	pluginBinary, err := plugin.Open(path)
-	if err != nil {
-		log.Panic(err)
-	}
-	symbolPlugin, err := pluginBinary.Lookup("FileOperations")
-	if err != nil {
-		log.Panic(err)
-	}
-	fileOperations, ok := symbolPlugin.(plugins.FileOperations)
-	if !ok {
-		log.Panic("unexpected type from module symbol")
 	}
 
 	// load configurations

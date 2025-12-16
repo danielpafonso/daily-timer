@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Add
+
+- Keybing 'r' to reset current selected timer
+
+### Change
+
+- Update help popup
+
 ## [1.3.0]
 
 ### Add

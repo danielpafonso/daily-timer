@@ -172,7 +172,7 @@ func (app *App) Start(version string) error {
 	app.helpPopup = TextPopup{
 		name:    "help",
 		x0:      -17,
-		y0:      -7,
+		y0:      -8,
 		x1:      17,
 		y1:      8,
 		visible: false,
@@ -181,6 +181,7 @@ func (app *App) Start(version string) error {
  <h> Show/Hide this menu
 
  <Space> Toggle timer on/off
+ <r>     Reset timer
 
  <down>/<j> Next user
  <up>/<k>   Previous user

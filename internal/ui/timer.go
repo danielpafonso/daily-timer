@@ -112,6 +112,15 @@ func (tm *Timer) Toggle() {
 	}
 }
 
+// Reset the timer
+func (tm *Timer) Reset() {
+	tm.value = 0
+	tm.displayTimer()
+	if tm.running {
+		tm.nextTick = time.Now().Add(time.Second)
+	}
+}
+
 func (tm *Timer) internalTicket(updateCh chan<- func(g *gocui.Gui) error) {
 	for {
 		if tm.running && time.Now().After(tm.nextTick) {

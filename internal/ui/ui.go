@@ -107,6 +107,14 @@ func (app *App) ToggleOnActive(g *gocui.Gui, v *gocui.View) error {
 	return nil
 }
 
+// ResetOnActive Reset timer (set to zero) only on active users
+func (app *App) ResetOnActive(g *gocui.Gui, v *gocui.View) error {
+	if (*app.users.users)[app.users.current].Active {
+		app.timer.Reset()
+	}
+	return nil
+}
+
 // OpenTempUser opens text input and sets it as active/current view
 func (app *App) OpenTempUser(g *gocui.Gui, v *gocui.View) error {
 	app.inputTemp.Visible = true
@@ -270,6 +278,10 @@ func (app *App) Start(version string) error {
 		return err
 	}
 	if err := app.gui.SetKeybinding(app.users.Name, gocui.KeyEnter, gocui.ModNone, app.ToggleOnActive); err != nil {
+		return err
+	}
+	// Reset timer
+	if err := app.gui.SetKeybinding(app.users.Name, 'r', gocui.ModNone, app.ResetOnActive); err != nil {
 		return err
 	}
 

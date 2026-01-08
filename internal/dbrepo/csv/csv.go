@@ -102,7 +102,7 @@ func (f *FileOperations) GetStats(participants []string, limitDailies int) ([]in
 	return outputStats, nil
 }
 
-func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
+func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp, ignoreZero bool) error {
 	var file *os.File
 	var err error
 	// check if file don't exists, if so writes header
@@ -121,6 +121,9 @@ func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp bool) 
 
 	now := time.Now().UTC()
 	for _, stat := range *stats {
+		if stat.Current == 0 && ignoreZero {
+			continue
+		}
 		if stat.Temp {
 			if writeTemp {
 				fmt.Fprintf(file,

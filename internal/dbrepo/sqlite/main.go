@@ -54,10 +54,13 @@ func (f *FileOperations) GetStats(participants []string, limitDailies int) ([]in
 	return outputStats, nil
 }
 
-func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp bool) error {
+func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp, ignoreZero bool) error {
 	now := time.Now()
 	insertData := make([]Dailies, 0)
 	for _, stat := range *stats {
+		if stat.Current == 0 && ignoreZero {
+			continue
+		}
 		if stat.Temp {
 			if writeTemp {
 				insertData = append(insertData, Dailies{

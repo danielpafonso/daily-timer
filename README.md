@@ -16,6 +16,7 @@ A terminal timer for Daily Standups meetings
 | randomOrder       | boolean | If `true` randomize the participant order                                                           |
 | stopwatch         | boolean | Select time mode, if `true` the script will work as a stopwatch else will run as a count down timer |
 | addTemp           | boolean | Flag that indicates if temporary participants should be written to statistics file                  |
+| ignoreZeroTime    | boolean | If `true` participants with zero timer will not be written on statistics                            |
 | stats.display     | boolean | Toggle display of past dailies statistics on participants list                                      |
 | stats.lastDailies | integer | Number of past dailies used to compute statistics                                                   |
 
@@ -29,6 +30,7 @@ Example:
   "randomOrder": true,
   "stopwatch": true,
   "addTemp": false,
+  "ignoreZeroTime": true,
   "stats": {
     "display": true,
     "lastDailies": 30

@@ -5,6 +5,7 @@
   "randomOrder": true,
   "stopwatch": true,
   "addTemp": false,
+  "ignoreZeroTime": true,
   "stats": {
     "display": true,
     "lastDailies": 30

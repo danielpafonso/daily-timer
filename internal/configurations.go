@@ -12,6 +12,7 @@ type Configurations struct {
 	Random       bool     `json:"randomOrder"`
 	Stopwatch    bool     `json:"stopwatch"`
 	AddTemp      bool     `json:"addTemp"`
+	IgnoreZero   bool     `json:"ignoreZeroTime"`
 	Status       struct {
 		Display     bool `json:"display"`
 		LastDailies int  `json:"lastDailies"`

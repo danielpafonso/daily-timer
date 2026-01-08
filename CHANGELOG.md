@@ -7,9 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1]
+
 ### Add
 
 - Keybing 'r' to reset current selected timer
+- `ignoreZeroTime` configuration which cause zero time participant to not be written
 
 ### Change
 
@@ -124,7 +127,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.3.0...HEAD
+[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.3.1
 [1.3.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.3.0
 [1.2.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.2.1
 [1.2.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.2.0

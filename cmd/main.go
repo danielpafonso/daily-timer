@@ -60,7 +60,7 @@ func main() {
 	}
 
 	// defering writing current session to DB
-	defer fileOperations.InsertDailies(&stats, configs.AddTemp)
+	defer fileOperations.InsertDailies(&stats, configs.AddTemp, configs.IgnoreZero)
 
 	// Initialize ui
 	appUI := ui.NewAppUI(*configs, &stats)

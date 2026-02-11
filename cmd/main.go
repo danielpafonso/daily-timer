@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"daily-timer/internal"
@@ -15,8 +16,21 @@ import (
 )
 
 const (
-	Version string = "1.3.1"
+	Version string = "1.4.0"
 )
+
+func SortStats(participants []string, stats []internal.Stats) {
+	// create map for position lookup
+	orderMap := make(map[string]int)
+	for i, name := range participants {
+		orderMap[name] = i
+	}
+
+	// sort
+	sort.Slice(stats, func(i, j int) bool {
+		return orderMap[stats[i].Name] < orderMap[stats[j].Name]
+	})
+}
 
 func main() {
 	var configPath string
@@ -57,6 +71,11 @@ func main() {
 	stats, err := fileOperations.GetStats(configs.Participants, configs.Status.LastDailies)
 	if err != nil {
 		log.Panic(err)
+	}
+
+	// sort stats if necessary
+	if !configs.Random {
+		SortStats(configs.Participants, stats)
 	}
 
 	// defering writing current session to DB

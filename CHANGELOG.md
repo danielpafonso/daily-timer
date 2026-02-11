@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0]
+
+### Add
+
+- If `randomOrder` option is false, keep the order of participants the same as in equal to json configuration
+
 ## [1.3.1]
 
 ### Add
@@ -127,7 +133,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.3.1...HEAD
+[unreleased]: https://github.com/danielpafonso/daily-timer/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.4.0
 [1.3.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.3.1
 [1.3.0]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.3.0
 [1.2.1]: https://github.com/danielpafonso/daily-timer/releases/tag/v1.2.1

@@ -49,7 +49,7 @@ func NewAppUI(config internal.Configurations, stats *[]internal.Stats) *App {
 		configPopup: TextPopup{
 			name:    "configHelp",
 			x0:      -10,
-			y0:      -4,
+			y0:      -5,
 			x1:      10,
 			y1:      5,
 			visible: false,
@@ -60,7 +60,8 @@ func NewAppUI(config internal.Configurations, stats *[]internal.Stats) *App {
  random: %v
  stopwatch: %v
  add temp: %v
- last dailies: %d`, config.Time, config.Warning, config.Random, config.Stopwatch, config.AddTemp, config.Status.LastDailies),
+ last dailies: %d
+ ignore zero: %t`, config.Time, config.Warning, config.Random, config.Stopwatch, config.AddTemp, config.Status.LastDailies, config.IgnoreZero),
 		},
 	}
 	// calculate user padding

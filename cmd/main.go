@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	Version string = "1.4.0-rc"
+	Version string = "1.4.1-rc"
 )
 
 func SortStats(participants []string, stats []internal.Stats) {

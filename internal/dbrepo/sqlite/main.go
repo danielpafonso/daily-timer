@@ -62,7 +62,7 @@ func (f *FileOperations) InsertDailies(stats *[]internal.Stats, writeTemp, ignor
 			continue
 		}
 		if stat.Temp {
-			if writeTemp {
+			if writeTemp && stat.Active {
 				insertData = append(insertData, Dailies{
 					Name: stat.Name,
 					Date: now,
